@@ -9,4 +9,7 @@ Makefile
 cmake_install.cmake
 pooper-cube
 pooper-cube.exe
+.cache/
+.cmake/
+compile_commands.json
 
