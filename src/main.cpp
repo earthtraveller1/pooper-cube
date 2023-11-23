@@ -1,6 +1,7 @@
 #include <cstdio>
 
 #include <fmt/color.h>
+#include <vector>
 #include <vulkan/vulkan.h>
 #include <vulkan/vulkan_core.h>
 
@@ -40,7 +41,7 @@ namespace {
         instance_t(const instance_t&) = delete;
         auto operator=(const instance_t&) -> instance_t& = delete;
         
-        operator VkInstance() noexcept {
+        operator VkInstance() const noexcept {
             return handle;
         }
         
@@ -55,6 +56,21 @@ auto main() -> int {
     try {
         const window_t window{800, 600, "Pooper Cube"};
         const instance_t instance;
+        
+        {
+            uint32_t device_count;
+            vkEnumeratePhysicalDevices(instance, &device_count, nullptr);
+            
+            std::vector<VkPhysicalDevice> devices(device_count);
+            vkEnumeratePhysicalDevices(instance, &device_count, devices.data());
+            
+            for (auto device : devices) {
+                VkPhysicalDeviceProperties properties;
+                vkGetPhysicalDeviceProperties(device, &properties);
+                
+                fmt::print(stderr, "[INFO]: Found physical device {}!\n", properties.deviceName);
+            }
+        }
 
         window.show();
         while (!window.should_close()) {
