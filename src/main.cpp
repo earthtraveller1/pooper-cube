@@ -1,5 +1,8 @@
+#include <cstdio>
+
+#include "fmt/color.h"
+
 #include "window.hpp"
-#include "logging.hpp"
 
 auto main() -> int {
     using pooper_cube::window_t;
@@ -11,15 +14,14 @@ auto main() -> int {
             window.poll_events();
         }
     } catch (window_t::creation_exception_t exception) {
-        using pooper_cube::log_error;
         using exception_t = window_t::creation_exception_t;
 
         switch (exception) {
             case exception_t::glfw_init_failed:
-                log_error("Failed to initialize GLFW.");
+                fmt::print(stderr, fmt::fg(fmt::color::red), "[FATAL ERROR]: Failed to initialize GLFW.\n");
                 break;
             case exception_t::window_creation_failed:
-                log_error("Failed to create the GLFW window.");
+                fmt::print(stderr, fmt::fg(fmt::color::red), "[FATAL ERROR]: Failed to create the GLFW window.\n");
                 break;
         }
     }
