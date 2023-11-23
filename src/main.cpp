@@ -1,19 +1,20 @@
 #include <cstdio>
+#include <cstdlib>
+#include <vector>
 
 #include <fmt/color.h>
-#include <vector>
 #include <vulkan/vulkan.h>
 #include <vulkan/vulkan_core.h>
 
 #include "window.hpp"
 
 namespace {
-    struct instance_creation_exception_t {
-        VkResult result_code;
-    };
-    
     struct instance_t {
         VkInstance handle;
+        
+        struct creation_exception_t {
+            VkResult result;
+        };
         
         instance_t() {
             const VkApplicationInfo application_info {
@@ -34,7 +35,7 @@ namespace {
             );
             
             if (result != VK_SUCCESS) {
-                throw instance_creation_exception_t{result};
+                throw creation_exception_t{result};
             }
         }
         
@@ -87,5 +88,8 @@ auto main() -> int {
                 fmt::print(stderr, fmt::fg(fmt::color::red), "[FATAL ERROR]: Failed to create the GLFW window.\n");
                 break;
         }
+    } catch (instance_t::creation_exception_t exception) {
+        fmt::print(stderr, fmt::fg(fmt::color::red), "[FATAL ERROR]: Failed to create a Vulkan instance. Vulkan error {}.", exception.result);
+        return EXIT_FAILURE;
     }
 }
