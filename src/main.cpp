@@ -1,10 +1,6 @@
 #include "window.hpp"
 #include "logging.hpp"
 
-auto neng(pooper_cube::window_t&& window) {
-    (void)window;
-}
-
 auto main() -> int {
     using pooper_cube::window_t;
     try {
