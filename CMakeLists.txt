@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.13)
 
+project(pooper-cube CXX)
+
 include(GNUInstallDirs)
 include(FetchContent)
-
-project(pooper-cube CXX)
 
 option(CMAKE_EXPORT_COMPILE_COMMANDS "Whether to generate compile_commands.json or not (Ninja only)." ON)
 
@@ -13,11 +13,16 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/glfw/glfw.git
     GIT_TAG master
 )
+FetchContent_Declare(
+    fmt
+    GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+    GIT_TAG master
+)
 
-FetchContent_MakeAvailable(glfw)
+FetchContent_MakeAvailable(glfw fmt)
 
 add_executable(pooper-cube)
-target_link_libraries(pooper-cube PRIVATE Vulkan::Vulkan)
+target_link_libraries(pooper-cube PRIVATE Vulkan::Vulkan glfw fmt)
 
 add_subdirectory(src)
 
