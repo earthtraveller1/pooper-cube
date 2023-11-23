@@ -7,6 +7,8 @@ include(FetchContent)
 
 option(CMAKE_EXPORT_COMPILE_COMMANDS "Whether to generate compile_commands.json or not (Ninja only)." ON)
 
+set(CMAKE_CXX_STANDARD 20)
+
 find_package(Vulkan)
 FetchContent_Declare(
     glfw
