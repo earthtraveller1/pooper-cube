@@ -16,16 +16,32 @@ namespace {
             VkResult result;
         };
         
-        instance_t() {
+        instance_t(bool p_enable_validation = false) {
             const VkApplicationInfo application_info {
                 .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
                 .pNext = nullptr,
+                .pApplicationName = "Pooper Cube",
+                .apiVersion = VK_API_VERSION_1_3,
             };
+
+            uint32_t glfw_extension_count = 0;
+            const auto glfw_extensions = glfwGetRequiredInstanceExtensions(&glfw_extension_count);
+            std::vector<const char*> enabled_extensions(glfw_extensions, glfw_extensions + glfw_extension_count);
+            std::vector<const char*> enabled_layers;
+
+            if (p_enable_validation) {
+                enabled_extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+                enabled_layers.push_back("VK_LAYER_KHRONOS_validation");
+            }
 
             const VkInstanceCreateInfo create_info {
                 .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
                 .pNext = nullptr,
                 .pApplicationInfo = &application_info,
+                .enabledLayerCount = static_cast<uint32_t>(enabled_layers.size()),
+                .ppEnabledLayerNames = enabled_layers.data(),
+                .enabledExtensionCount = static_cast<uint32_t>(enabled_extensions.size()),
+                .ppEnabledExtensionNames = enabled_extensions.data(),
             };
 
             const auto result = vkCreateInstance(
