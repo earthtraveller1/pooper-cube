@@ -120,7 +120,7 @@ vulkan_debug_messenger_t::vulkan_debug_messenger_t(VkInstance p_instance) : m_in
     }
 }
 
-vulkan_debug_messenger_t::vulkan_debug_messenger_t(vulkan_debug_messenger_t&& source):
+vulkan_debug_messenger_t::vulkan_debug_messenger_t(vulkan_debug_messenger_t&& source) noexcept:
     m_handle(source.m_handle), 
     m_instance(source.m_instance) 
 {
@@ -128,7 +128,7 @@ vulkan_debug_messenger_t::vulkan_debug_messenger_t(vulkan_debug_messenger_t&& so
     source.m_instance = VK_NULL_HANDLE;
 }
 
-auto vulkan_debug_messenger_t::operator=(vulkan_debug_messenger_t&& right_hand_side) -> vulkan_debug_messenger_t& {
+auto vulkan_debug_messenger_t::operator=(vulkan_debug_messenger_t&& right_hand_side) noexcept -> vulkan_debug_messenger_t& {
     vk_destroy_debug_utils_messenger_ext(m_instance, m_handle, nullptr);
 
     m_instance = right_hand_side.m_instance;
