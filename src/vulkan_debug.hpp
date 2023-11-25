@@ -5,16 +5,22 @@
 // Proxy functions for the Vulkan debugging capabilities.
 
 namespace pooper_cube {
-    auto vk_create_debug_utils_messenger_ext(
-        VkInstance instance,
-        const VkDebugUtilsMessengerCreateInfoEXT* create_info,
-        const VkAllocationCallbacks* allocator,
-        VkDebugUtilsMessengerEXT* messenger
-    ) -> VkResult;
+    extern const VkDebugUtilsMessengerCreateInfoEXT DEBUG_MESSENGER_CREATE_INFO;
 
-    auto vk_destroy_debug_utils_messenger_ext(
-        VkInstance instance,
-        VkDebugUtilsMessengerEXT messenger,
-        const VkAllocationCallbacks* allocator
-    ) -> void;
+    class vulkan_debug_messenger_t {
+        public:
+            explicit vulkan_debug_messenger_t(VkInstance instance);
+
+            struct creation_exception_t {
+                VkResult result;
+            };
+
+            vulkan_debug_messenger_t(const vulkan_debug_messenger_t&) = delete;
+            auto operator=(const vulkan_debug_messenger_t&) -> vulkan_debug_messenger_t& = delete;
+
+            ~vulkan_debug_messenger_t() noexcept;
+        private:
+            VkDebugUtilsMessengerEXT m_handle;
+            VkInstance m_instance;
+    };
 }
