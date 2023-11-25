@@ -1,6 +1,8 @@
 #include <fmt/format.h>
 #include <fmt/color.h>
 
+#include "common.hpp"
+
 #include "window.hpp"
 
 using pooper_cube::window_t;
@@ -27,4 +29,16 @@ window_t::window_t(uint16_t p_width, uint16_t p_height, std::string_view p_title
         glfwTerminate();
         throw creation_exception_t::window_creation_failed;
     }
+}
+
+
+auto window_t::create_vulkan_surface(VkInstance p_instance) const -> window_t::surface_t {
+    VkSurfaceKHR surface;
+    const auto result = glfwCreateWindowSurface(p_instance, m_window, nullptr, &surface);
+
+    if (result != VK_SUCCESS) {
+        throw vulkan_creation_exception_t{result, "window surface"};
+    }
+
+    return surface_t{surface, p_instance};
 }

@@ -88,6 +88,7 @@ auto main(int p_argc, char** p_argv) -> int {
         const window_t window{800, 600, "Pooper Cube"};
         const instance_t instance{enable_validation};
         std::optional<vulkan_debug_messenger_t> debug_messenger;
+        const auto window_surface = window.create_vulkan_surface(instance);
 
         if (enable_validation) {
             debug_messenger = vulkan_debug_messenger_t{instance};

@@ -4,6 +4,7 @@
 #include <string_view>
 
 #include <GLFW/glfw3.h>
+#include <vulkan/vulkan_core.h>
 
 namespace pooper_cube {
     // A thin wrapper around a GLFW window, specifically made for this project
@@ -30,6 +31,22 @@ namespace pooper_cube {
                 glfwGetWindowSize(m_window, &dimensions.width, &dimensions.height);
                 return dimensions;
             }
+
+            class surface_t {
+                public:
+                    surface_t(VkSurfaceKHR surface, VkInstance instance) : m_handle(surface), m_instance(instance) {}
+
+                    surface_t(const surface_t&) = delete;
+                    auto operator=(const surface_t&) = delete;
+
+                    ~surface_t() noexcept { vkDestroySurfaceKHR(m_instance, m_handle, nullptr); }
+
+                private:
+                    VkSurfaceKHR m_handle;
+                    VkInstance m_instance;
+            };
+
+            auto create_vulkan_surface(VkInstance instance) const -> surface_t;
 
             // Show the window.
             auto show() const noexcept -> void {
