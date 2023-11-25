@@ -57,7 +57,7 @@ namespace {
                 break;
         }
 
-        fmt::print(stderr, fmt::fg(text_color), "[VULKAN {} {}]: {}", 
+        fmt::print(stderr, fmt::fg(text_color), "[VULKAN {} {}]: {}\n", 
                 type_text, severity_text, p_callback_data->pMessage);
 
         return VK_FALSE;
