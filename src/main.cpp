@@ -8,16 +8,13 @@
 #include <vulkan/vulkan.h>
 #include <vulkan/vulkan_core.h>
 
+#include "common.hpp"
 #include "window.hpp"
 #include "vulkan_debug.hpp"
 
 namespace {
     struct instance_t {
         VkInstance handle;
-        
-        struct creation_exception_t {
-            VkResult result;
-        };
         
         instance_t(bool p_enable_validation = false) {
             const VkApplicationInfo application_info {
@@ -56,7 +53,7 @@ namespace {
             );
             
             if (result != VK_SUCCESS) {
-                throw creation_exception_t{result};
+                throw pooper_cube::vulkan_creation_exception_t{result, "instance"};
             }
         }
         
@@ -85,6 +82,8 @@ auto main(int p_argc, char** p_argv) -> int {
 
     using pooper_cube::window_t;
     using pooper_cube::vulkan_debug_messenger_t;
+    using pooper_cube::vulkan_creation_exception_t;
+
     try {
         const window_t window{800, 600, "Pooper Cube"};
         const instance_t instance{enable_validation};
@@ -124,11 +123,15 @@ auto main(int p_argc, char** p_argv) -> int {
                 fmt::print(stderr, fmt::fg(fmt::color::red), "[FATAL ERROR]: Failed to create the GLFW window.\n");
                 break;
         }
-    } catch (instance_t::creation_exception_t exception) {
-        fmt::print(stderr, fmt::fg(fmt::color::red), "[FATAL ERROR]: Failed to create a Vulkan instance. Vulkan error {}.\n", static_cast<int>(exception.result));
-        return EXIT_FAILURE;
-    } catch (vulkan_debug_messenger_t::creation_exception_t exception) {
-        fmt::print(stderr, fmt::fg(fmt::color::red), "[FATAL ERROR]: Failed to create a Vulkan debug messenger. Vulkan error {}.\n", static_cast<int>(exception.result));
+    } catch (vulkan_creation_exception_t& exception) {
+        fmt::print(
+            stderr, 
+            fmt::fg(fmt::color::red), 
+            "[FATAL ERROR]: Failed to create a Vulkan {}. Vulkan error {}.\n", 
+            exception.object_name, 
+            static_cast<int>(exception.error_code)
+        );
+
         return EXIT_FAILURE;
     }
 }

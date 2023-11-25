@@ -11,10 +11,6 @@ namespace pooper_cube {
         public:
             explicit vulkan_debug_messenger_t(VkInstance instance);
 
-            struct creation_exception_t {
-                VkResult result;
-            };
-
             vulkan_debug_messenger_t(const vulkan_debug_messenger_t&) = delete;
             auto operator=(const vulkan_debug_messenger_t&) -> vulkan_debug_messenger_t& = delete;
 

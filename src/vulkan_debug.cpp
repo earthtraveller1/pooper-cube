@@ -1,7 +1,8 @@
-
 #include <fmt/format.h>
 #include <fmt/color.h>
 #include <vulkan/vulkan_core.h>
+
+#include "common.hpp"
 
 #include "vulkan_debug.hpp"
 
@@ -116,7 +117,7 @@ using pooper_cube::vulkan_debug_messenger_t;
 vulkan_debug_messenger_t::vulkan_debug_messenger_t(VkInstance p_instance) : m_instance(p_instance) {
     const auto result = vk_create_debug_utils_messenger_ext(p_instance, &DEBUG_MESSENGER_CREATE_INFO, nullptr, &m_handle);
     if (result != VK_SUCCESS) {
-        throw creation_exception_t{result};
+        throw vulkan_creation_exception_t{result, "debug messenger"};
     }
 }
 
