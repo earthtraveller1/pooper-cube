@@ -1,6 +1,8 @@
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <vector>
+#include <optional>
 
 #include <fmt/color.h>
 #include <vulkan/vulkan.h>
@@ -71,13 +73,26 @@ namespace {
     };
 }
 
-auto main() -> int {
+auto main(int p_argc, char** p_argv) -> int {
+    bool enable_validation = false;
+
+    const std::vector<const char*> argv(p_argv, p_argv + p_argc);
+    for (auto arg : argv) {
+        if (std::strcmp(arg, "--enable-validation") == 0) {
+            enable_validation = true;
+        }
+    }
+
     using pooper_cube::window_t;
     using pooper_cube::vulkan_debug_messenger_t;
     try {
         const window_t window{800, 600, "Pooper Cube"};
-        const instance_t instance{true};
-        const vulkan_debug_messenger_t debug_messenger{instance};
+        const instance_t instance{enable_validation};
+        std::optional<vulkan_debug_messenger_t> debug_messenger;
+
+        if (enable_validation) {
+            debug_messenger = vulkan_debug_messenger_t{instance};
+        }
         
         {
             uint32_t device_count;
@@ -110,7 +125,10 @@ auto main() -> int {
                 break;
         }
     } catch (instance_t::creation_exception_t exception) {
-        fmt::print(stderr, fmt::fg(fmt::color::red), "[FATAL ERROR]: Failed to create a Vulkan instance. Vulkan error {}.", static_cast<int>(exception.result));
+        fmt::print(stderr, fmt::fg(fmt::color::red), "[FATAL ERROR]: Failed to create a Vulkan instance. Vulkan error {}.\n", static_cast<int>(exception.result));
+        return EXIT_FAILURE;
+    } catch (vulkan_debug_messenger_t::creation_exception_t exception) {
+        fmt::print(stderr, fmt::fg(fmt::color::red), "[FATAL ERROR]: Failed to create a Vulkan debug messenger. Vulkan error {}.\n", static_cast<int>(exception.result));
         return EXIT_FAILURE;
     }
 }
