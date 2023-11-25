@@ -89,7 +89,7 @@ auto main() -> int {
                 break;
         }
     } catch (instance_t::creation_exception_t exception) {
-        fmt::print(stderr, fmt::fg(fmt::color::red), "[FATAL ERROR]: Failed to create a Vulkan instance. Vulkan error {}.", exception.result);
+        fmt::print(stderr, fmt::fg(fmt::color::red), "[FATAL ERROR]: Failed to create a Vulkan instance. Vulkan error {}.", static_cast<int>(exception.result));
         return EXIT_FAILURE;
     }
 }
