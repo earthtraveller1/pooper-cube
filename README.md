@@ -22,3 +22,7 @@ cmake . -DCMAKE_BUILD_TYPE=Release
 cmake --build .
 ```
 
+## Copyright
+
+This project is licensed under the [GNU GPL License v3.0](LICENSE).
+
