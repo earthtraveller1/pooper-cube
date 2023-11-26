@@ -39,7 +39,7 @@ namespace pooper_cube {
                     surface_t(const surface_t&) = delete;
                     auto operator=(const surface_t&) = delete;
 
-                    operator VkSurfaceKHR() { return m_handle; }
+                    operator VkSurfaceKHR() const { return m_handle; }
 
                     ~surface_t() noexcept { vkDestroySurfaceKHR(m_instance, m_handle, nullptr); }
 
