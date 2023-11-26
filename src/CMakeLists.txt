@@ -1,6 +1,7 @@
 target_sources(
     pooper-cube PRIVATE
 
+    devices.cpp
     main.cpp
     vulkan-debug.cpp
     vulkan-objects.hpp

@@ -36,5 +36,9 @@ namespace pooper_cube {
             VkInstance m_instance;
     };
 
+    struct no_adequate_physical_device_exception_t {};
+
     extern const VkDebugUtilsMessengerCreateInfoEXT DEBUG_MESSENGER_CREATE_INFO;
+
+    auto choose_physical_device(VkInstance p_instance, VkSurfaceKHR p_surface) -> VkPhysicalDevice; 
 }
