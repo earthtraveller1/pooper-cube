@@ -1,11 +1,5 @@
 #pragma once
 
-#include <cstdint>
-#include <string_view>
-
-#include <GLFW/glfw3.h>
-#include <vulkan/vulkan_core.h>
-
 namespace pooper_cube {
     // A thin wrapper around a GLFW window, specifically made for this project
     class window_t {

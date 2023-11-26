@@ -1,7 +1,3 @@
-#include <fmt/format.h>
-#include <fmt/color.h>
-#include <vulkan/vulkan_core.h>
-
 #include "common.hpp"
 
 #include "vulkan-objects.hpp"

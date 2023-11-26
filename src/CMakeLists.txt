@@ -9,3 +9,5 @@ target_sources(
     window.cpp
     window.hpp
 )
+
+target_precompile_headers(pooper-cube PRIVATE pch.hpp)

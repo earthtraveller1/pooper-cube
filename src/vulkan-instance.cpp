@@ -1,7 +1,3 @@
-#include <vector>
-
-#include <GLFW/glfw3.h>
-
 #include "common.hpp"
 
 #include "vulkan-objects.hpp"

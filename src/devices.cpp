@@ -1,8 +1,3 @@
-#include <vector>
-#include <optional>
-
-#include <vulkan/vulkan.h>
-
 #include "vulkan-objects.hpp"
 
 auto pooper_cube::choose_physical_device(VkInstance p_instance, VkSurfaceKHR p_surface) -> VkPhysicalDevice {

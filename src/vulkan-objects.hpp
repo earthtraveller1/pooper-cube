@@ -1,7 +1,5 @@
 #pragma once
 
-#include <vulkan/vulkan.h>
-
 namespace pooper_cube {
     struct instance_t {
         VkInstance handle;

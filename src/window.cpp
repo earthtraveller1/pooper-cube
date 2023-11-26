@@ -1,6 +1,3 @@
-#include <fmt/format.h>
-#include <fmt/color.h>
-
 #include "common.hpp"
 
 #include "window.hpp"

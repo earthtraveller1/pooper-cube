@@ -1,13 +1,3 @@
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <vector>
-#include <optional>
-
-#include <fmt/color.h>
-#include <vulkan/vulkan.h>
-#include <vulkan/vulkan_core.h>
-
 #include "common.hpp"
 #include "window.hpp"
 #include "vulkan-objects.hpp"
@@ -15,7 +5,7 @@
 auto main(int p_argc, char** p_argv) -> int {
     using pooper_cube::window_t;
     using pooper_cube::instance_t;
-    using pooper_cube::vulkan_debug_messenger_t;
+    using pooper_cube::debug_messenger_t;
     using pooper_cube::vulkan_creation_exception_t;
     using pooper_cube::no_adequate_physical_device_exception_t;
     using pooper_cube::choose_physical_device;
