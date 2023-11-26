@@ -10,7 +10,6 @@
 
 #include "common.hpp"
 #include "window.hpp"
-#include "vulkan_debug.hpp"
 #include "vulkan-objects.hpp"
 
 namespace {
