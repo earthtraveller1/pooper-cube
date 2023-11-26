@@ -15,7 +15,7 @@ cmake --build .
 
 ### Linux
 
-If you haven't already, you need to install the Vulkan SDK, X.Org development files (The `xorg-dev` package on Ubuntu, not sure about other distros), CMake, a build system (preferably Ninja, but MSBuild is fine) and a C++20 compliant compiler (MSVC is fine).
+If you haven't already, you need to install the Vulkan SDK, X.Org development files (The `xorg-dev` package on Ubuntu, not sure about other distros), CMake, a build system (preferably Ninja, but MSBuild is fine) and a C++20 compliant compiler (Mostly compiled on Clang, though GCC should be fine).
 
 ```
 cmake . -DCMAKE_BUILD_TYPE=Release
