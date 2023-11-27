@@ -1,4 +1,66 @@
+#include "common.hpp"
 #include "vulkan-objects.hpp"
+
+using pooper_cube::device_t;
+
+device_t::device_t(const physical_device_t& p_physical_device) {
+    std::vector<VkDeviceQueueCreateInfo> queue_create_infos;
+
+    const float queue_priority = 1.0f;
+
+    if (p_physical_device.graphics_queue_family == p_physical_device.present_queue_family) {
+        queue_create_infos.push_back(
+            VkDeviceQueueCreateInfo {
+                .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+                .pNext = nullptr,
+                .flags = 0,
+                .queueFamilyIndex = p_physical_device.graphics_queue_family,
+                .queueCount = 1,
+                .pQueuePriorities = &queue_priority,
+            }
+        );
+    } else {
+        VkDeviceQueueCreateInfo queue_create_info {
+            .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+            .pNext = nullptr,
+            .flags = 0,
+            .queueFamilyIndex = p_physical_device.graphics_queue_family,
+            .queueCount = 1,
+            .pQueuePriorities = &queue_priority,
+        };
+
+        queue_create_infos.push_back(queue_create_info);
+        queue_create_info.queueFamilyIndex = p_physical_device.present_queue_family;
+        queue_create_infos.push_back(queue_create_info);
+    }
+
+    const char* const enabled_extensions[1] = {
+        VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+    };
+
+    const VkPhysicalDeviceFeatures enabled_features{0};
+
+    const VkDeviceCreateInfo device_info {
+        .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+        .pNext = nullptr,
+        .flags = 0,
+        .queueCreateInfoCount = static_cast<uint32_t>(queue_create_infos.size()),
+        .pQueueCreateInfos = queue_create_infos.data(),
+        .enabledLayerCount = 0,
+        .ppEnabledLayerNames = nullptr,
+        .enabledExtensionCount = 1,
+        .ppEnabledExtensionNames = enabled_extensions,
+        .pEnabledFeatures = &enabled_features,
+    };
+
+    const auto result = vkCreateDevice(p_physical_device, &device_info, nullptr, &m_device);
+    if (result != VK_SUCCESS) {
+        throw vulkan_creation_exception_t{result, "logical device"};
+    }
+
+    vkGetDeviceQueue(m_device, p_physical_device.graphics_queue_family, 0, &m_graphics_queue);
+    vkGetDeviceQueue(m_device, p_physical_device.present_queue_family, 0, &m_present_queue);
+}
 
 auto pooper_cube::choose_physical_device(VkInstance p_instance, VkSurfaceKHR p_surface) -> physical_device_t {
     uint32_t device_count;

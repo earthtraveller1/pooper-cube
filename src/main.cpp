@@ -6,6 +6,7 @@ auto main(int p_argc, char** p_argv) -> int {
     using pooper_cube::window_t;
     using pooper_cube::instance_t;
     using pooper_cube::debug_messenger_t;
+    using pooper_cube::device_t;
     using pooper_cube::vulkan_creation_exception_t;
     using pooper_cube::no_adequate_physical_device_exception_t;
     using pooper_cube::choose_physical_device;
@@ -37,6 +38,8 @@ auto main(int p_argc, char** p_argv) -> int {
 
             fmt::print(stderr, "[INFO]: Selected the {} graphics card.\n", device_properties.deviceName);
         }
+
+        const device_t logical_device{physical_device};
 
         window.show();
         while (!window.should_close()) {
