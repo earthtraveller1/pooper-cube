@@ -1,6 +1,6 @@
 #include "vulkan-objects.hpp"
 
-auto pooper_cube::choose_physical_device(VkInstance p_instance, VkSurfaceKHR p_surface) -> VkPhysicalDevice {
+auto pooper_cube::choose_physical_device(VkInstance p_instance, VkSurfaceKHR p_surface) -> physical_device_t {
     uint32_t device_count;
     vkEnumeratePhysicalDevices(p_instance, &device_count, nullptr);
 
@@ -78,7 +78,7 @@ auto pooper_cube::choose_physical_device(VkInstance p_instance, VkSurfaceKHR p_s
         }
 
 
-        return physical_device;
+        return physical_device_t{physical_device, graphics_family.value(), present_family.value()};
     }
 
     throw no_adequate_physical_device_exception_t{};

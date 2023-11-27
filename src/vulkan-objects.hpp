@@ -34,9 +34,17 @@ namespace pooper_cube {
             VkInstance m_instance;
     };
 
+    struct physical_device_t {
+        VkPhysicalDevice handle;
+        uint32_t graphics_queue_family;
+        uint32_t present_queue_family;
+
+        operator VkPhysicalDevice() const noexcept { return handle; }
+    };
+
     struct no_adequate_physical_device_exception_t {};
 
     extern const VkDebugUtilsMessengerCreateInfoEXT DEBUG_MESSENGER_CREATE_INFO;
 
-    auto choose_physical_device(VkInstance p_instance, VkSurfaceKHR p_surface) -> VkPhysicalDevice; 
+    auto choose_physical_device(VkInstance p_instance, VkSurfaceKHR p_surface) -> physical_device_t; 
 }
