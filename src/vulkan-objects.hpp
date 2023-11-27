@@ -18,17 +18,17 @@ namespace pooper_cube {
         }
     };
 
-    class vulkan_debug_messenger_t {
+    class debug_messenger_t {
         public:
-            explicit vulkan_debug_messenger_t(VkInstance instance);
+            explicit debug_messenger_t(VkInstance instance);
 
-            vulkan_debug_messenger_t(const vulkan_debug_messenger_t&) = delete;
-            auto operator=(const vulkan_debug_messenger_t&) -> vulkan_debug_messenger_t& = delete;
+            debug_messenger_t(const debug_messenger_t&) = delete;
+            auto operator=(const debug_messenger_t&) -> debug_messenger_t& = delete;
 
-            vulkan_debug_messenger_t(vulkan_debug_messenger_t&& source) noexcept;
-            auto operator=(vulkan_debug_messenger_t&& right_hand_side) noexcept -> vulkan_debug_messenger_t&;
+            debug_messenger_t(debug_messenger_t&& source) noexcept;
+            auto operator=(debug_messenger_t&& right_hand_side) noexcept -> debug_messenger_t&;
 
-            ~vulkan_debug_messenger_t() noexcept;
+            ~debug_messenger_t() noexcept;
         private:
             VkDebugUtilsMessengerEXT m_handle;
             VkInstance m_instance;

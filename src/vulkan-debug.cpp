@@ -108,16 +108,16 @@ const VkDebugUtilsMessengerCreateInfoEXT pooper_cube::DEBUG_MESSENGER_CREATE_INF
     .pUserData = nullptr,
 };
 
-using pooper_cube::vulkan_debug_messenger_t;
+using pooper_cube::debug_messenger_t;
 
-vulkan_debug_messenger_t::vulkan_debug_messenger_t(VkInstance p_instance) : m_instance(p_instance) {
+debug_messenger_t::debug_messenger_t(VkInstance p_instance) : m_instance(p_instance) {
     const auto result = vk_create_debug_utils_messenger_ext(p_instance, &DEBUG_MESSENGER_CREATE_INFO, nullptr, &m_handle);
     if (result != VK_SUCCESS) {
         throw vulkan_creation_exception_t{result, "debug messenger"};
     }
 }
 
-vulkan_debug_messenger_t::vulkan_debug_messenger_t(vulkan_debug_messenger_t&& source) noexcept:
+debug_messenger_t::debug_messenger_t(debug_messenger_t&& source) noexcept:
     m_handle(source.m_handle), 
     m_instance(source.m_instance) 
 {
@@ -125,7 +125,7 @@ vulkan_debug_messenger_t::vulkan_debug_messenger_t(vulkan_debug_messenger_t&& so
     source.m_instance = VK_NULL_HANDLE;
 }
 
-auto vulkan_debug_messenger_t::operator=(vulkan_debug_messenger_t&& right_hand_side) noexcept -> vulkan_debug_messenger_t& {
+auto debug_messenger_t::operator=(debug_messenger_t&& right_hand_side) noexcept -> debug_messenger_t& {
     vk_destroy_debug_utils_messenger_ext(m_instance, m_handle, nullptr);
 
     m_instance = right_hand_side.m_instance;
@@ -137,6 +137,6 @@ auto vulkan_debug_messenger_t::operator=(vulkan_debug_messenger_t&& right_hand_s
     return *this;
 }
 
-vulkan_debug_messenger_t::~vulkan_debug_messenger_t() noexcept {
+debug_messenger_t::~debug_messenger_t() noexcept {
     vk_destroy_debug_utils_messenger_ext(m_instance, m_handle, nullptr);
 }

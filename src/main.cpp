@@ -22,11 +22,11 @@ auto main(int p_argc, char** p_argv) -> int {
     try {
         const window_t window{800, 600, "Pooper Cube"};
         const instance_t instance{enable_validation};
-        std::optional<vulkan_debug_messenger_t> debug_messenger;
+        std::optional<debug_messenger_t> debug_messenger;
         const auto window_surface = window.create_vulkan_surface(instance);
 
         if (enable_validation) {
-            debug_messenger = vulkan_debug_messenger_t{instance};
+            debug_messenger = debug_messenger_t{instance};
         }
 
         const auto physical_device = choose_physical_device(instance, window_surface);
