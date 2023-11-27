@@ -58,7 +58,7 @@ namespace {
                 severity_text = "WARNING";
                 break;
             case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
-                text_color = fmt::color::yellow;
+                text_color = fmt::color::red;
                 severity_text = "ERROR";
                 break;
             default:
