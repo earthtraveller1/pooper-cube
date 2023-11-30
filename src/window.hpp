@@ -26,6 +26,13 @@ namespace pooper_cube {
                 return dimensions;
             }
 
+            // Obtain the width and height of the framebuffer of the window.
+            auto get_framebuffer_dimensions() const noexcept -> dimensions_t {
+                dimensions_t dimensions;
+                glfwGetFramebufferSize(m_window, &dimensions.width, &dimensions.height);
+                return dimensions;
+            }
+
             class surface_t {
                 public:
                     surface_t(VkSurfaceKHR surface, VkInstance instance) : m_handle(surface), m_instance(instance) {}
