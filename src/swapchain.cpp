@@ -37,7 +37,7 @@ swapchain_t::swapchain_t(const window_t& p_window, const physical_device_t& p_ph
     uint32_t surface_format_count;
     vkGetPhysicalDeviceSurfaceFormatsKHR(p_physical_device, p_surface, &surface_format_count, nullptr);
 
-    std::vector<VkSurfaceFormatKHR> surface_formats;
+    std::vector<VkSurfaceFormatKHR> surface_formats(surface_format_count);
     vkGetPhysicalDeviceSurfaceFormatsKHR(p_physical_device, p_surface, &surface_format_count, surface_formats.data());
 
     VkSurfaceFormatKHR chosen_surface_format{surface_formats.at(0)};
