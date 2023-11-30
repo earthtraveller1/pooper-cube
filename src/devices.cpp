@@ -1,5 +1,6 @@
 #include "common.hpp"
 #include "vulkan-objects.hpp"
+#include <vulkan/vulkan_core.h>
 
 using pooper_cube::device_t;
 
@@ -139,6 +140,19 @@ auto pooper_cube::choose_physical_device(VkInstance p_instance, VkSurfaceKHR p_s
             continue;
         }
 
+        uint32_t surface_format_count;
+        vkGetPhysicalDeviceSurfaceFormatsKHR(physical_device, p_surface, &surface_format_count, nullptr);
+
+        if (surface_format_count == 0) {
+            continue;
+        }
+
+        uint32_t present_mode_count;
+        vkGetPhysicalDeviceSurfacePresentModesKHR(physical_device, p_surface, &present_mode_count, nullptr);
+
+        if (present_mode_count == 0) {
+            continue;
+        }
 
         return physical_device_t{physical_device, graphics_family.value(), present_family.value()};
     }
