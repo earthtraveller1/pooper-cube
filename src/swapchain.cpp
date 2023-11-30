@@ -88,7 +88,7 @@ swapchain_t::swapchain_t(const window_t& p_window, const physical_device_t& p_ph
         .queueFamilyIndexCount = 0,
         .pQueueFamilyIndices = nullptr,
 
-        .preTransform = VK_SURFACE_TRANSFORM_INHERIT_BIT_KHR,
+        .preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR,
         .compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
         .presentMode = chosen_present_mode,
         .clipped = VK_TRUE,
