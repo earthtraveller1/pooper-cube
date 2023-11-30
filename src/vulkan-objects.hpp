@@ -1,5 +1,7 @@
 #pragma once
 
+#include "window.hpp"
+
 namespace pooper_cube {
     struct instance_t {
         VkInstance handle;
@@ -61,6 +63,31 @@ namespace pooper_cube {
             VkDevice m_device;
             VkQueue m_graphics_queue;
             VkQueue m_present_queue;
+    };
+
+    class swapchain_t {
+        public:
+            explicit swapchain_t(
+                const window_t& window, 
+                const physical_device_t& physical_device, 
+                const device_t& device, 
+                const window_t::surface_t& surface
+            );
+
+            swapchain_t(const swapchain_t&) = delete;
+            auto operator=(const swapchain_t&) = delete;
+
+            operator VkSwapchainKHR() const noexcept { return m_swapchain; }
+
+            ~swapchain_t() noexcept {
+                vkDestroySwapchainKHR(m_device, m_swapchain, nullptr);
+            }
+            
+        private:
+            VkSwapchainKHR m_swapchain;
+            std::vector<VkImage> m_images;
+
+            const device_t& m_device;
     };
 
     struct no_adequate_physical_device_exception_t {};
