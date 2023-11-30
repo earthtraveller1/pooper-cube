@@ -3,6 +3,7 @@ target_sources(
 
     devices.cpp
     main.cpp
+    swapchain.cpp
     vulkan-debug.cpp
     vulkan-objects.hpp
     vulkan-instance.cpp
