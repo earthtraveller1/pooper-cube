@@ -85,7 +85,9 @@ namespace pooper_cube {
             
         private:
             VkSwapchainKHR m_swapchain;
+
             std::vector<VkImage> m_images;
+            std::vector<VkImageView> m_image_views;
 
             const device_t& m_device;
     };

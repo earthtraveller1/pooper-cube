@@ -119,4 +119,42 @@ swapchain_t::swapchain_t(const window_t& p_window, const physical_device_t& p_ph
 
     m_images.resize(image_count);
     vkGetSwapchainImagesKHR(m_device, m_swapchain, &image_count, m_images.data());
+
+    // Now, we can get into creating the image views.
+    // Usually, the image views are another object entirely, but this time, since
+    // it's so closely tied to the swap chain, I've decided to just bundle them
+    // together.
+
+    m_image_views.resize(image_count);
+
+    std::transform(
+        m_images.cbegin(), 
+        m_images.cend(), 
+        m_image_views.begin(), 
+        [this, &chosen_surface_format](VkImage p_image) -> VkImageView {
+            const VkImageViewCreateInfo view_info {
+                .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+                .pNext = nullptr,
+                .flags = 0,
+                .image = p_image,
+                .viewType = VK_IMAGE_VIEW_TYPE_2D,
+                .format = chosen_surface_format.format,
+                .components = {
+                    .r = VK_COMPONENT_SWIZZLE_IDENTITY,
+                    .g = VK_COMPONENT_SWIZZLE_IDENTITY,
+                    .b = VK_COMPONENT_SWIZZLE_IDENTITY,
+                    .a = VK_COMPONENT_SWIZZLE_IDENTITY,
+                }
+            };
+
+            VkImageView view;
+            const auto result = vkCreateImageView(m_device, &view_info, nullptr, &view);
+            if (result != VK_SUCCESS) {
+                throw vulkan_creation_exception_t{result, "image view"};
+            }
+
+            return view;
+        }
+    );
 }
+
