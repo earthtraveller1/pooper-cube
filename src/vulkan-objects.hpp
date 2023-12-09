@@ -109,7 +109,7 @@ namespace pooper_cube {
         private:
             VkCommandPool m_pool;
             const device_t& m_device;
-   };
+    };
 
     struct no_adequate_physical_device_exception_t {};
 
