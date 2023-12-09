@@ -8,3 +8,7 @@ namespace pooper_cube {
         std::string_view object_name;
     };
 }
+
+#define NO_COPY(classname)                            \
+    classname(const classname&) = delete;             \
+    classname& operator=(const classname&) = delete;
