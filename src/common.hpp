@@ -7,6 +7,10 @@ namespace pooper_cube {
         VkResult error_code;
         std::string_view object_name;
     };
+
+    struct file_opening_exception_t {
+        std::string_view file_name;
+    };
 }
 
 #define NO_COPY(classname)                            \
