@@ -9,6 +9,7 @@ auto main(int p_argc, char** p_argv) -> int {
     using pooper_cube::device_t;
     using pooper_cube::instance_t;
     using pooper_cube::no_adequate_physical_device_exception_t;
+    using pooper_cube::shader_module_t;
     using pooper_cube::swapchain_t;
     using pooper_cube::vulkan_creation_exception_t;
     using pooper_cube::window_t;
@@ -45,6 +46,9 @@ auto main(int p_argc, char** p_argv) -> int {
         const swapchain_t swapchain{window, physical_device, logical_device, window_surface};
 
         const command_pool_t command_pool{logical_device, physical_device.graphics_queue_family};
+
+        const shader_module_t vertex_shader{logical_device, shader_module_t::type_t::vertex, "shaders/triangle.vert.spv"};
+        const shader_module_t fragment_shader{logical_device, shader_module_t::type_t::fragment, "shaders/triangle.frag.spv"};
 
         window.show();
         while (!window.should_close()) {
