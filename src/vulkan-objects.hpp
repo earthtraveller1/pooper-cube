@@ -111,6 +111,36 @@ namespace pooper_cube {
             const device_t& m_device;
     };
 
+    class shader_module_t {
+        public:
+            enum class type_t {
+                vertex, fragment
+            };
+
+            explicit shader_module_t(const device_t& device, type_t type, std::string_view code_path);
+
+            auto get_shader_stage() const noexcept -> VkPipelineShaderStageCreateInfo {
+                return {
+                    .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+                    .pNext = nullptr,
+                    .flags = 0,
+                    .stage = m_type,
+                    .module = m_module,
+                    .pName = "main",
+                };
+            }
+
+            ~shader_module_t() noexcept {
+                vkDestroyShaderModule(m_device, m_module, nullptr);
+            }
+            
+        private:
+            const device_t& m_device;
+
+            VkShaderModule m_module;
+            VkShaderStageFlagBits m_type;
+    };
+
     struct no_adequate_physical_device_exception_t {};
 
     extern const VkDebugUtilsMessengerCreateInfoEXT DEBUG_MESSENGER_CREATE_INFO;
