@@ -130,6 +130,10 @@ namespace pooper_cube {
                 };
             }
 
+            auto get_type() const noexcept {
+                return m_type;
+            }
+
             ~shader_module_t() noexcept {
                 vkDestroyShaderModule(m_device, m_module, nullptr);
             }
