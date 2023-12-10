@@ -5,6 +5,7 @@ target_sources(
     vulkan-objects.hpp
     devices.cpp
     vulkan-debug.cpp
+    pipelines.cpp
     window.hpp
     common.hpp
     window.cpp
