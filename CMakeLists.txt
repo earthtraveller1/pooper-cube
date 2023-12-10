@@ -27,6 +27,7 @@ add_executable(pooper-cube)
 target_link_libraries(pooper-cube PRIVATE Vulkan::Vulkan glfw fmt)
 
 add_subdirectory(src)
+add_subdirectory(shaders)
 
 install(
     TARGETS pooper-cube
