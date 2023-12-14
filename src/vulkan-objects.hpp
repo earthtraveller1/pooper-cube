@@ -3,6 +3,8 @@
 #include "common.hpp"
 #include "window.hpp"
 
+#include <glm/glm.hpp>
+
 namespace pooper_cube {
     struct instance_t {
         VkInstance handle;
@@ -143,6 +145,19 @@ namespace pooper_cube {
 
             VkShaderModule m_module;
             VkShaderStageFlagBits m_type;
+    };
+
+    class graphics_pipeline_t {
+        public:
+            graphics_pipeline_t(const device_t& device, const shader_module_t& vertex_module, const shader_module_t& fragment_module);
+            NO_COPY(graphics_pipeline_t);
+
+            ~graphics_pipeline_t() noexcept {
+                vkDestroyPipeline(m_device, m_pipeline, nullptr);
+            }
+        private:
+            VkPipeline m_pipeline;
+            const device_t& m_device;
     };
 
     struct no_adequate_physical_device_exception_t {};

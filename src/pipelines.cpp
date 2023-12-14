@@ -3,6 +3,7 @@
 #include "vulkan-objects.hpp"
 
 using pooper_cube::shader_module_t;
+using pooper_cube::graphics_pipeline_t;
 
 shader_module_t::shader_module_t(const device_t& p_device, type_t p_type, std::string_view p_code_path) : m_device(p_device) {
     std::ifstream file{p_code_path.data(), std::ios::ate | std::ios::binary};
@@ -28,4 +29,11 @@ shader_module_t::shader_module_t(const device_t& p_device, type_t p_type, std::s
     if (result != VK_SUCCESS) {
         throw vulkan_creation_exception_t{result, "shader module"};
     }
+}
+
+graphics_pipeline_t::graphics_pipeline_t(const device_t& p_device, const shader_module_t& p_vertex_module, const shader_module_t& p_fragment_module) : m_device(p_device) {
+    const std::array<VkPipelineShaderStageCreateInfo, 2> shader_stages {
+        p_vertex_module.get_shader_stage(),
+        p_fragment_module.get_shader_stage()
+    };
 }
