@@ -5,6 +5,7 @@
 #include <cstring>
 #include <cstdint>
 #include <vector>
+#include <array>
 #include <optional>
 #include <string>
 #include <string_view>
