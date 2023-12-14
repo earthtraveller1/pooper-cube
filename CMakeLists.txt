@@ -20,11 +20,16 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/fmtlib/fmt.git
     GIT_TAG master
 )
+FetchContent_Declare(
+    glm
+    GIT_REPOSITORY https://github.com/g-truc/glm.git
+    GIT_TAG master
+)
 
-FetchContent_MakeAvailable(glfw fmt)
+FetchContent_MakeAvailable(glfw fmt glm)
 
 add_executable(pooper-cube)
-target_link_libraries(pooper-cube PRIVATE Vulkan::Vulkan glfw fmt)
+target_link_libraries(pooper-cube PRIVATE Vulkan::Vulkan glfw fmt glm)
 
 add_subdirectory(src)
 add_subdirectory(shaders)
