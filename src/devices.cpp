@@ -125,7 +125,7 @@ auto pooper_cube::choose_physical_device(VkInstance p_instance, VkSurfaceKHR p_s
             continue;
         }
 
-        std::vector<VkExtensionProperties> device_extensions;
+        std::vector<VkExtensionProperties> device_extensions(device_extension_count);
         vkEnumerateDeviceExtensionProperties(physical_device, nullptr, &device_extension_count, device_extensions.data());
 
         bool has_swapchain_extension;
