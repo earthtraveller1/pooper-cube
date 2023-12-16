@@ -22,7 +22,7 @@ shader_module_t::shader_module_t(const device_t& p_device, type_t p_type, std::s
         .pNext = nullptr,
         .flags = 0,
         .codeSize = file_size,
-        .pCode = reinterpret_cast<const uint32_t*>(file_size),
+        .pCode = reinterpret_cast<const uint32_t*>(buffer.data()),
     };
 
     const auto result = vkCreateShaderModule(m_device, &module_info, nullptr, &m_module);
