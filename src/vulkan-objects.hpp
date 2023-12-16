@@ -151,7 +151,7 @@ namespace pooper_cube {
             pipeline_layout_t(const device_t& device, std::span<const VkDescriptorSetLayout> set_layouts, std::span<const VkPushConstantRange> push_constant_ranges);
             NO_COPY(pipeline_layout_t);
 
-            operator VkPipelineLayout() { return m_layout; }
+            operator VkPipelineLayout() const noexcept { return m_layout; }
 
             ~pipeline_layout_t() noexcept {
                 vkDestroyPipelineLayout(m_device, m_layout, nullptr);
@@ -165,7 +165,7 @@ namespace pooper_cube {
 
     class graphics_pipeline_t {
         public:
-            graphics_pipeline_t(const device_t& device, const shader_module_t& vertex_module, const shader_module_t& fragment_module);
+            graphics_pipeline_t(const device_t& device, const shader_module_t& vertex_module, const shader_module_t& fragment_module, const pipeline_layout_t& layout);
             NO_COPY(graphics_pipeline_t);
 
             ~graphics_pipeline_t() noexcept {
