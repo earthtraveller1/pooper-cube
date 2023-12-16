@@ -3,8 +3,6 @@
 #include "common.hpp"
 #include "window.hpp"
 
-#include <glm/glm.hpp>
-
 namespace pooper_cube {
     struct instance_t {
         VkInstance handle;
@@ -159,6 +157,19 @@ namespace pooper_cube {
         private:
             VkPipeline m_pipeline;
             const device_t& m_device;
+    };
+
+    struct vertex_t {
+        glm::vec3 position;
+    };
+
+    static constexpr std::array<VkVertexInputAttributeDescription, 1> vertex_attribute_descriptions {
+        VkVertexInputAttributeDescription {
+            .location = 0,
+            .binding = 0,
+            .format = VK_FORMAT_R32G32_SFLOAT,
+            .offset = offsetof(vertex_t, position),
+        },
     };
 
     struct no_adequate_physical_device_exception_t {};
