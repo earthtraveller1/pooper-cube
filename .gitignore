@@ -13,4 +13,5 @@ pooper-cube.exe
 .cmake/
 compile_commands.json
 *.spv
+*.pdb
 
