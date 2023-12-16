@@ -146,6 +146,23 @@ namespace pooper_cube {
             VkShaderStageFlagBits m_type;
     };
 
+    class pipeline_layout_t {
+        public:
+            pipeline_layout_t(const device_t& device, std::span<const VkDescriptorSetLayout> set_layouts, std::span<const VkPushConstantRange> push_constant_ranges);
+            NO_COPY(pipeline_layout_t);
+
+            operator VkPipelineLayout() { return m_layout; }
+
+            ~pipeline_layout_t() noexcept {
+                vkDestroyPipelineLayout(m_device, m_layout, nullptr);
+            }
+
+        private:
+            const device_t& m_device;
+
+            VkPipelineLayout m_layout;
+    };
+
     class graphics_pipeline_t {
         public:
             graphics_pipeline_t(const device_t& device, const shader_module_t& vertex_module, const shader_module_t& fragment_module);

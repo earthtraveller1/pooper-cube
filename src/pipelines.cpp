@@ -4,6 +4,7 @@
 
 using pooper_cube::shader_module_t;
 using pooper_cube::graphics_pipeline_t;
+using pooper_cube::pipeline_layout_t;
 
 shader_module_t::shader_module_t(const device_t& p_device, type_t p_type, std::string_view p_code_path) : m_device(p_device) {
     std::ifstream file{p_code_path.data(), std::ios::ate | std::ios::binary};
@@ -28,6 +29,27 @@ shader_module_t::shader_module_t(const device_t& p_device, type_t p_type, std::s
     const auto result = vkCreateShaderModule(m_device, &module_info, nullptr, &m_module);
     if (result != VK_SUCCESS) {
         throw vulkan_creation_exception_t{result, "shader module"};
+    }
+}
+
+pipeline_layout_t::pipeline_layout_t(
+        const device_t& p_device, 
+        std::span<const VkDescriptorSetLayout> p_set_layouts, 
+        std::span<const VkPushConstantRange> p_push_constant_ranges
+) : m_device(p_device) {
+    const VkPipelineLayoutCreateInfo layout_info {
+        .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
+        .pNext = nullptr,
+        .flags = 0,
+        .setLayoutCount = static_cast<uint32_t>(p_set_layouts.size()),
+        .pSetLayouts = p_set_layouts.data(),
+        .pushConstantRangeCount = static_cast<uint32_t>(p_push_constant_ranges.size()),
+        .pPushConstantRanges = p_push_constant_ranges.data(),
+    };
+
+    const auto result = vkCreatePipelineLayout(m_device, &layout_info, nullptr, &m_layout);
+    if (result != VK_SUCCESS) {
+        throw vulkan_creation_exception_t{result, "pipeline layout"};
     }
 }
 
