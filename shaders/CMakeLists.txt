@@ -8,7 +8,7 @@ add_custom_command(
 add_custom_command(
     OUTPUT triangle.frag.spv
     COMMAND ${Vulkan_GLSLC_EXECUTABLE}
-    ARGS -o ${CMAKE_CURRENT_SOURCE_DIR}/triangle.frag.spv ${CMAKE_CURRENT_SOURCE_DIR}/triangle.vert
+    ARGS -o ${CMAKE_CURRENT_SOURCE_DIR}/triangle.frag.spv ${CMAKE_CURRENT_SOURCE_DIR}/triangle.frag
     DEPENDS triangle.frag
 )
 
