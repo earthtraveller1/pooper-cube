@@ -27,6 +27,15 @@ shader_module_t::shader_module_t(const device_t& p_device, type_t p_type, std::s
         .pCode = reinterpret_cast<const uint32_t*>(buffer.data()),
     };
 
+    switch (p_type) {
+        case type_t::vertex:
+            m_type = VK_SHADER_STAGE_VERTEX_BIT;
+            break;
+        case type_t::fragment:
+            m_type = VK_SHADER_STAGE_FRAGMENT_BIT;
+            break;
+    }
+
     const auto result = vkCreateShaderModule(m_device, &module_info, nullptr, &m_module);
     if (result != VK_SUCCESS) {
         throw vulkan_creation_exception_t{result, "shader module"};
