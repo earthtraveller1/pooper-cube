@@ -13,6 +13,8 @@ auto main(int p_argc, char** p_argv) -> int {
     using pooper_cube::swapchain_t;
     using pooper_cube::vulkan_creation_exception_t;
     using pooper_cube::window_t;
+    using pooper_cube::pipeline_layout_t;
+    using pooper_cube::graphics_pipeline_t;
 
     bool enable_validation = false;
 
@@ -49,6 +51,12 @@ auto main(int p_argc, char** p_argv) -> int {
 
         const shader_module_t vertex_shader{logical_device, shader_module_t::type_t::vertex, "shaders/triangle.vert.spv"};
         const shader_module_t fragment_shader{logical_device, shader_module_t::type_t::fragment, "shaders/triangle.frag.spv"};
+
+        const std::vector<VkDescriptorSetLayout> set_layouts;
+        const std::vector<VkPushConstantRange> push_constant_ranges;
+
+        const pipeline_layout_t pipeline_layout{logical_device, set_layouts, push_constant_ranges};
+        const graphics_pipeline_t graphics_pipeline{logical_device, vertex_shader, fragment_shader, pipeline_layout};
 
         window.show();
         while (!window.should_close()) {
