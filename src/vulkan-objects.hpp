@@ -189,6 +189,22 @@ namespace pooper_cube {
         },
     };
 
+    class buffer_t {
+        public:
+            buffer_t(const physical_device_t& physical_device, const device_t& device, const void* data, size_t data_size);
+            NO_COPY(buffer_t);
+
+            enum class type_t {
+                vertex, element
+            };
+
+        private:
+            const device_t& m_device;
+
+            VkBuffer m_buffer;
+            VkDeviceMemory m_memory;
+    };
+
     struct no_adequate_physical_device_exception_t {};
 
     extern const VkDebugUtilsMessengerCreateInfoEXT DEBUG_MESSENGER_CREATE_INFO;
