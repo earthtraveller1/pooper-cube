@@ -191,12 +191,16 @@ namespace pooper_cube {
 
     class buffer_t {
         public:
-            buffer_t(const physical_device_t& physical_device, const device_t& device, const void* data, size_t data_size);
+            enum class type_t {
+                vertex, element, staging
+            };
+
+            buffer_t(const physical_device_t& physical_device, const device_t& device, type_t type, VkDeviceSize size);
             NO_COPY(buffer_t);
 
-            enum class type_t {
-                vertex, element
-            };
+            operator VkBuffer() {
+                return m_buffer;
+            }
 
         private:
             const device_t& m_device;

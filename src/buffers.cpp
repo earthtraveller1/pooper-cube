@@ -22,13 +22,22 @@ namespace {
     }
 }
 
-buffer_t::buffer_t(const physical_device_t& p_physical_device, const device_t& p_device, const void* p_data, size_t p_data_size) : m_device(p_device) {
+buffer_t::buffer_t(const physical_device_t& p_physical_device, const device_t& p_device, type_t p_type, VkDeviceSize p_size) : m_device(p_device) {
     const VkBufferCreateInfo buffer_info {
         .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
         .pNext = nullptr,
         .flags = 0,
-        .size = p_data_size,
-        .usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+        .size = p_size,
+        .usage = [p_type]() -> VkBufferUsageFlags{
+            switch (p_type) {
+                case type_t::vertex:
+                    return VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+                case type_t::element:
+                    return VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+                case type_t::staging:
+                    return VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+            }
+        }(),
         .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
         .queueFamilyIndexCount = 0,
         .pQueueFamilyIndices = nullptr,
