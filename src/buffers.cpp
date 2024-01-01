@@ -54,6 +54,8 @@ buffer_t::buffer_t(const physical_device_t& p_physical_device, const device_t& p
     const auto memory_type_index = find_memory_type(
             p_physical_device, 
             memory_requirements.memoryTypeBits, 
-            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+            p_type == type_t::staging 
+                ? VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT 
+                : VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
     );
 }
