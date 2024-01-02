@@ -62,3 +62,4 @@ buffer_t::buffer_t(const physical_device_t& p_physical_device, const device_t& p
     if (!memory_type_index.has_value()) {
         throw allocation_exception_t{VK_SUCCESS, "Could not find an adequate memory type."};
     }
+}
