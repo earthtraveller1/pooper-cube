@@ -58,4 +58,7 @@ buffer_t::buffer_t(const physical_device_t& p_physical_device, const device_t& p
                 ? VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT 
                 : VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
     );
-}
+
+    if (!memory_type_index.has_value()) {
+        throw allocation_exception_t{VK_SUCCESS, "Could not find an adequate memory type."};
+    }

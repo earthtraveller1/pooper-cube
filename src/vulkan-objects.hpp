@@ -195,10 +195,15 @@ namespace pooper_cube {
                 vertex, element, staging
             };
 
+            struct allocation_exception_t {
+                VkResult error_code;
+                std::string_view what;
+            };
+
             buffer_t(const physical_device_t& physical_device, const device_t& device, type_t type, VkDeviceSize size);
             NO_COPY(buffer_t);
 
-            operator VkBuffer() {
+            operator VkBuffer() const noexcept {
                 return m_buffer;
             }
 
