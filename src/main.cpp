@@ -15,6 +15,7 @@ auto main(int p_argc, char** p_argv) -> int {
     using pooper_cube::window_t;
     using pooper_cube::pipeline_layout_t;
     using pooper_cube::graphics_pipeline_t;
+    using pooper_cube::buffer_t;
 
     bool enable_validation = false;
 
@@ -93,6 +94,13 @@ auto main(int p_argc, char** p_argv) -> int {
         );
 
         return EXIT_FAILURE;
+    } catch (buffer_t::allocation_exception_t& exception) {
+        fmt::print(
+            stderr,
+            fmt::fg(fmt::color::red),
+            "[FATAL ERROR]: Could not allocate memory for a buffer: {}. Vulkan error {}",
+            exception.what, exception.error_code
+        );
     }
 }
 
