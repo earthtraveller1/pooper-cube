@@ -207,7 +207,7 @@ namespace pooper_cube {
                 return m_buffer;
             }
 
-            ~buffer_t() {
+            ~buffer_t() noexcept {
                 vkFreeMemory(m_device, m_memory, nullptr);
                 vkDestroyBuffer(m_device, m_buffer, nullptr);
             }
