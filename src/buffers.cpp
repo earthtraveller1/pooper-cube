@@ -43,7 +43,7 @@ buffer_t::buffer_t(const physical_device_t& p_physical_device, const device_t& p
         .pQueueFamilyIndices = nullptr,
     };
 
-    const auto result = vkCreateBuffer(p_device, &buffer_info, nullptr, &m_buffer);
+    auto result = vkCreateBuffer(p_device, &buffer_info, nullptr, &m_buffer);
     if (result != VK_SUCCESS) {
         throw vulkan_creation_exception_t{result, "vertex buffer"};
     }
@@ -62,5 +62,17 @@ buffer_t::buffer_t(const physical_device_t& p_physical_device, const device_t& p
     if (!memory_type_index.has_value()) {
         // We use VK_SUCCESS when Vulkan didn't return any error codes.
         throw allocation_exception_t{VK_SUCCESS, "Could not find an adequate memory type."};
+    }
+
+    const VkMemoryAllocateInfo allocate_info {
+        .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
+        .pNext = nullptr,
+        .allocationSize = memory_requirements.size,
+        .memoryTypeIndex = memory_type_index.value(),
+    };
+
+    result = vkAllocateMemory(m_device, &allocate_info, nullptr, &m_memory);
+    if (result != VK_SUCCESS) {
+        throw allocation_exception_t{result, "Failed to allocate memory."};
     }
 }
