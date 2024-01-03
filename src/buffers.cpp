@@ -22,7 +22,9 @@ namespace {
     }
 }
 
-buffer_t::buffer_t(const physical_device_t& p_physical_device, const device_t& p_device, type_t p_type, VkDeviceSize p_size) : m_device(p_device) {
+buffer_t::buffer_t(const physical_device_t& p_physical_device, const device_t& p_device, type_t p_type, VkDeviceSize p_size)
+    : m_device(p_device), m_size(p_size)
+{
     const VkBufferCreateInfo buffer_info {
         .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
         .pNext = nullptr,
