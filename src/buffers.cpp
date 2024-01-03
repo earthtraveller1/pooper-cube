@@ -80,3 +80,47 @@ buffer_t::buffer_t(const physical_device_t& p_physical_device, const device_t& p
 
     vkBindBufferMemory(m_device, m_buffer, m_memory, 0);
 }
+
+auto buffer_t::copy_from(const buffer_t& p_source, const command_pool_t& p_command_pool) const -> void {
+    auto command_buffer = p_command_pool.allocate_command_buffer();
+
+    VkCommandBufferBeginInfo begin_info {
+        .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+        .pNext = nullptr,
+        .flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,
+        .pInheritanceInfo = nullptr,
+    };
+    
+    auto result = vkBeginCommandBuffer(command_buffer, &begin_info);
+    if (result != VK_SUCCESS) {
+        throw generic_vulkan_exception_t{result, "Failed to begin recording command buffer for copying two buffers."};
+    }
+
+    auto copy_size = std::min(m_size, p_source.m_size);
+
+    const VkBufferCopy buffer_copy {
+        .srcOffset = 0,
+        .dstOffset = 0,
+        .size = copy_size,
+    };
+
+    vkCmdCopyBuffer(command_buffer, p_source, *this, 1, &buffer_copy);
+
+    result = vkEndCommandBuffer(command_buffer);
+    if (result != VK_SUCCESS) {
+        throw generic_vulkan_exception_t{result, "Failed to end recording command ubffer for copying tow buffers."};
+    }
+
+    const VkSubmitInfo submit_info {
+        .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+        .commandBufferCount = 1,
+        .pCommandBuffers = &command_buffer,
+    };
+
+    result = vkQueueSubmit(m_device.get_graphics_queue(), 1, &submit_info, VK_NULL_HANDLE);
+    if (result != VK_SUCCESS) {
+        throw generic_vulkan_exception_t{result, "Failed to submit command buffer for copying two buffers."};
+    }
+
+    vkQueueWaitIdle(m_device.get_graphics_queue());
+}

@@ -207,6 +207,8 @@ namespace pooper_cube {
                 return m_buffer;
             }
 
+            auto copy_from(const buffer_t& source, const command_pool_t& command_pool) const -> void;
+
             virtual ~buffer_t() noexcept {
                 vkFreeMemory(m_device, m_memory, nullptr);
                 vkDestroyBuffer(m_device, m_buffer, nullptr);
