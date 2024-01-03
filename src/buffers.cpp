@@ -75,4 +75,6 @@ buffer_t::buffer_t(const physical_device_t& p_physical_device, const device_t& p
     if (result != VK_SUCCESS) {
         throw allocation_exception_t{result, "Failed to allocate memory."};
     }
+
+    vkBindBufferMemory(m_device, m_buffer, m_memory, 0);
 }
