@@ -207,16 +207,50 @@ namespace pooper_cube {
                 return m_buffer;
             }
 
-            ~buffer_t() noexcept {
+            virtual ~buffer_t() noexcept {
                 vkFreeMemory(m_device, m_memory, nullptr);
                 vkDestroyBuffer(m_device, m_buffer, nullptr);
             }
 
-        private:
+        protected:
             const device_t& m_device;
 
             VkBuffer m_buffer;
             VkDeviceMemory m_memory;
+    };
+
+    class staging_buffer_t : buffer_t {
+        public:
+            staging_buffer_t(const physical_device_t& physical_device, const device_t& device, VkDeviceSize size)
+                : buffer_t(physical_device, device, type_t::staging, size), m_size(size)
+            {}
+
+            class mapped_memory_t {
+                public:
+                    mapped_memory_t(void* data, const staging_buffer_t& buffer) :
+                        m_data(data), m_buffer(buffer) {}
+                    NO_COPY(mapped_memory_t);
+
+                    using data_type_t = void*;
+                    operator data_type_t() const noexcept { return m_data; }
+
+                    ~mapped_memory_t() noexcept {
+                        vkUnmapMemory(m_buffer.m_device, m_buffer.m_memory);
+                    }
+
+                private:
+                    void* m_data;
+                    const staging_buffer_t& m_buffer;
+            };
+
+            auto map_memory() const noexcept -> mapped_memory_t {
+                void* data;
+                vkMapMemory(m_device, m_memory, 0, m_size, 0, &data);
+                return mapped_memory_t{data, *this};
+            }
+
+        private:
+            VkDeviceSize m_size;
     };
 
     struct no_adequate_physical_device_exception_t {};
