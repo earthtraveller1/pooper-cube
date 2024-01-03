@@ -59,6 +59,20 @@ auto main(int p_argc, char** p_argv) -> int {
         const pipeline_layout_t pipeline_layout{logical_device, set_layouts, push_constant_ranges};
         const graphics_pipeline_t graphics_pipeline{logical_device, vertex_shader, fragment_shader, pipeline_layout};
 
+        const buffer_t vertex_buffer{physical_device, logical_device, buffer_t::type_t::vertex, 3*sizeof(float)};
+
+        {
+            float stuff[] = { 1.0f, 2.0f, 3.0f };
+            const pooper_cube::staging_buffer_t staging_buffer{physical_device, logical_device, 3 * sizeof(float)};
+
+            {
+                const auto memory = staging_buffer.map_memory();
+                std::memcpy(memory, stuff, sizeof(stuff));
+            }
+
+            vertex_buffer.copy_from(staging_buffer, command_pool);
+        }
+
         window.show();
         while (!window.should_close()) {
             window.poll_events();
