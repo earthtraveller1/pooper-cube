@@ -222,7 +222,7 @@ namespace pooper_cube {
             VkDeviceSize m_size;
     };
 
-    class staging_buffer_t : buffer_t {
+    class staging_buffer_t : public buffer_t {
         public:
             staging_buffer_t(const physical_device_t& physical_device, const device_t& device, VkDeviceSize size)
                 : buffer_t(physical_device, device, type_t::staging, size)
