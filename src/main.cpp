@@ -84,19 +84,19 @@ auto main(int p_argc, char** p_argv) -> int {
         }
 
         const semaphore_t acquired_image_semaphore{logical_device}, rendering_done_semaphore{logical_device};
-        const fence_t presentation_done_fence{logical_device};
+        const fence_t rendering_done_fence{logical_device};
 
         const auto command_buffer = command_pool.allocate_command_buffer();
 
         window.show();
         while (!window.should_close()) {
-            const VkFence presentation_done_fence_raw = presentation_done_fence;
+            const VkFence rendering_done_fence_raw = rendering_done_fence;
 
             VkResult result;
 #define VK_ERROR(f, m) result = f; if (result != VK_SUCCESS) { throw generic_vulkan_exception_t{result, m}; }
 
             VK_ERROR(
-                vkWaitForFences(logical_device, 1, &presentation_done_fence_raw, VK_TRUE, std::numeric_limits<uint64_t>::max()),
+                vkWaitForFences(logical_device, 1, &rendering_done_fence_raw, VK_TRUE, std::numeric_limits<uint64_t>::max()),
                 "Failed to wait for fences"
             );
             uint32_t image_index;
@@ -223,6 +223,28 @@ auto main(int p_argc, char** p_argv) -> int {
             VK_ERROR(
                 vkEndCommandBuffer(command_buffer),
                 "Failed to stop recording the command buffer"
+            );
+
+            const VkSemaphore acquired_image_semaphore_raw = acquired_image_semaphore;
+            const VkSemaphore rendering_done_semaphore_raw = rendering_done_semaphore;
+
+            const VkPipelineStageFlags wait_stages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+
+            const VkSubmitInfo submit_info {
+                .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+                .pNext = nullptr,
+                .waitSemaphoreCount = 1,
+                .pWaitSemaphores = &acquired_image_semaphore_raw,
+                .pWaitDstStageMask = wait_stages,
+                .commandBufferCount = 1,
+                .pCommandBuffers = &command_buffer,
+                .signalSemaphoreCount = 1,
+                .pSignalSemaphores = &rendering_done_semaphore_raw
+            };
+
+            VK_ERROR(
+                vkQueueSubmit(logical_device.get_graphics_queue(), 1, &submit_info, rendering_done_fence),
+                "Failed to submit the command buffer to the graphics queue!"
             );
 
 #undef VK_ERROR
