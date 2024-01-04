@@ -99,6 +99,10 @@ auto main(int p_argc, char** p_argv) -> int {
                 vkWaitForFences(logical_device, 1, &rendering_done_fence_raw, VK_TRUE, std::numeric_limits<uint64_t>::max()),
                 "Failed to wait for fences"
             );
+            VK_ERROR(
+                vkResetFences(logical_device, 1, &rendering_done_fence_raw),
+                "Failed to reset the fences!"
+            );
             uint32_t image_index;
             VK_ERROR(
                 vkAcquireNextImageKHR(logical_device, swapchain, std::numeric_limits<uint64_t>::max(), acquired_image_semaphore, VK_NULL_HANDLE, &image_index),
