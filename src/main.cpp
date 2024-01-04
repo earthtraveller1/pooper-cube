@@ -120,6 +120,15 @@ auto main(int p_argc, char** p_argv) -> int {
             "[FATAL ERROR]: Could not allocate memory for a buffer: {}. Vulkan error {}",
             exception.what, static_cast<int>(exception.error_code)
         );
+    } catch (const pooper_cube::generic_vulkan_exception_t& exception) {
+        fmt::print(
+            stderr,
+            fmt::fg(fmt::color::red),
+            "[VULKAN ERROR {}]: {}\n",
+            exception.error_code, exception.what
+        );
+
+        return EXIT_FAILURE;
     }
 }
 
