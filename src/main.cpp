@@ -1,6 +1,8 @@
 #include "common.hpp"
 #include "window.hpp"
 #include "vulkan-objects.hpp"
+#include <limits>
+#include <vulkan/vulkan_core.h>
 
 auto main(int p_argc, char** p_argv) -> int {
     using pooper_cube::choose_physical_device;
@@ -9,6 +11,7 @@ auto main(int p_argc, char** p_argv) -> int {
     using pooper_cube::device_t;
     using pooper_cube::instance_t;
     using pooper_cube::no_adequate_physical_device_exception_t;
+    using pooper_cube::generic_vulkan_exception_t;
     using pooper_cube::shader_module_t;
     using pooper_cube::swapchain_t;
     using pooper_cube::vulkan_creation_exception_t;
@@ -16,6 +19,8 @@ auto main(int p_argc, char** p_argv) -> int {
     using pooper_cube::pipeline_layout_t;
     using pooper_cube::graphics_pipeline_t;
     using pooper_cube::buffer_t;
+    using pooper_cube::semaphore_t;
+    using pooper_cube::fence_t;
 
     bool enable_validation = false;
 
@@ -78,8 +83,71 @@ auto main(int p_argc, char** p_argv) -> int {
             vertex_buffer.copy_from(staging_buffer, command_pool);
         }
 
+        const semaphore_t acquired_image_semaphore{logical_device}, rendering_done_semaphore{logical_device};
+        const fence_t presentation_done_fence{logical_device};
+
+        const auto command_buffer = command_pool.allocate_command_buffer();
+
         window.show();
         while (!window.should_close()) {
+            const VkFence presentation_done_fence_raw = presentation_done_fence;
+
+            VkResult result;
+#define VK_ERROR(f, m) result = f; if (result != VK_SUCCESS) { throw generic_vulkan_exception_t{result, m}; }
+
+            VK_ERROR(
+                vkWaitForFences(logical_device, 1, &presentation_done_fence_raw, VK_TRUE, std::numeric_limits<uint64_t>::max()),
+                "Failed to wait for fences"
+            );
+            uint32_t image_index;
+            VK_ERROR(
+                vkAcquireNextImageKHR(logical_device, swapchain, std::numeric_limits<uint64_t>::max(), acquired_image_semaphore, VK_NULL_HANDLE, &image_index),
+                "Failed to acquire an image from the swap chain"
+            );
+            VK_ERROR(vkResetCommandBuffer(command_buffer, 0), "Failed to reset the command buffer!");
+
+            const VkCommandBufferBeginInfo command_buffer_begin_info {
+                .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+                .pNext = nullptr,
+                .flags = 0,
+                .pInheritanceInfo = nullptr,
+            };
+
+            VK_ERROR(
+                vkBeginCommandBuffer(command_buffer, &command_buffer_begin_info),
+                "Failed to start recording the command buffer!"
+            );
+
+            const VkImageMemoryBarrier image_barrier {
+                .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
+                .pNext = nullptr,
+                .srcAccessMask = 0,
+                .dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+                .oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+                .newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+                .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+                .image = swapchain.get_image(image_index),
+                .subresourceRange = {
+                    .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                    .baseMipLevel = 0,
+                    .levelCount = 1,
+                    .baseArrayLayer = 0,
+                    .layerCount = 1
+                }
+            };
+
+            vkCmdPipelineBarrier(
+                command_buffer, 
+                VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, 
+                VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, 
+                0, 
+                0, nullptr, 
+                0, nullptr, 
+                1, &image_barrier
+            );
+
+#undef VK_ERROR
             window.poll_events();
         }
     } catch (window_t::creation_exception_t exception) {
