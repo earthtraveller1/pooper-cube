@@ -14,6 +14,7 @@ target_sources(
     pch.hpp
     swapchain.cpp
     commands.cpp
+    sync-objects.cpp
 )
 
 target_precompile_headers(pooper-cube PRIVATE pch.hpp)

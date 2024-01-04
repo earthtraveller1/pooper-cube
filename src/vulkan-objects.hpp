@@ -253,6 +253,22 @@ namespace pooper_cube {
             }
     };
 
+    class semaphore_t {
+        public:
+            semaphore_t(const device_t& device);
+            NO_COPY(semaphore_t);
+
+            operator VkSemaphore() { return m_handle; }
+
+            ~semaphore_t() {
+                vkDestroySemaphore(m_device, m_handle, nullptr);
+            }
+
+        private:
+            VkSemaphore m_handle;
+            const device_t& m_device;
+    };
+
     struct no_adequate_physical_device_exception_t {};
 
     extern const VkDebugUtilsMessengerCreateInfoEXT DEBUG_MESSENGER_CREATE_INFO;
