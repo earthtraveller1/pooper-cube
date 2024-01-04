@@ -119,7 +119,7 @@ auto main(int p_argc, char** p_argv) -> int {
             );
 
             const VkImageMemoryBarrier image_barrier {
-                .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
+                .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
                 .pNext = nullptr,
                 .srcAccessMask = 0,
                 .dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
@@ -177,7 +177,7 @@ auto main(int p_argc, char** p_argv) -> int {
                     },
                     .extent = swapchain.get_extent(),
                 },
-                .layerCount = 0,
+                .layerCount = 1,
                 .viewMask = 0,
                 .colorAttachmentCount = 1,
                 .pColorAttachments = &attachment_info,
@@ -192,7 +192,7 @@ auto main(int p_argc, char** p_argv) -> int {
             vkCmdEndRendering(command_buffer);
 
             const VkImageMemoryBarrier image_barrier_2 {
-                .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
+                .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
                 .pNext = nullptr,
                 .srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
                 .dstAccessMask = 0,
