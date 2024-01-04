@@ -62,12 +62,17 @@ auto main(int p_argc, char** p_argv) -> int {
         const buffer_t vertex_buffer{physical_device, logical_device, buffer_t::type_t::vertex, 3*sizeof(float)};
 
         {
-            float stuff[] = { 1.0f, 2.0f, 3.0f };
-            const pooper_cube::staging_buffer_t staging_buffer{physical_device, logical_device, 3 * sizeof(float)};
+            const pooper_cube::vertex_t vertices[] {
+                {{0.0f, -0.5f, 0.0f}},
+                {{0.5f, 0.5f, 0.0f}},
+                {{-0.5f, 0.5f, 0.0f}}
+            };
+
+            const pooper_cube::staging_buffer_t staging_buffer{physical_device, logical_device, sizeof(vertices)};
 
             {
                 const auto memory = staging_buffer.map_memory();
-                std::memcpy(memory, stuff, sizeof(stuff));
+                std::memcpy(memory, vertices, sizeof(vertices));
             }
 
             vertex_buffer.copy_from(staging_buffer, command_pool);
