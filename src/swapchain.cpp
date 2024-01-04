@@ -10,7 +10,7 @@ swapchain_t::swapchain_t(const window_t& p_window, const physical_device_t& p_ph
     VkSurfaceCapabilitiesKHR surface_capabilities;
     vkGetPhysicalDeviceSurfaceCapabilitiesKHR(p_physical_device, p_surface, &surface_capabilities);
 
-    VkExtent2D swap_extent = surface_capabilities.currentExtent;
+    m_extent = surface_capabilities.currentExtent;
     // When surface_capabilities.currentExtent is set to this special value, it indicates
     // that the "indicating that the surface size will be determined by the extent of a 
     // swapchain targeting the surface."
@@ -18,16 +18,16 @@ swapchain_t::swapchain_t(const window_t& p_window, const physical_device_t& p_ph
     const uint32_t special_value = 0xFFFFFFFF;
 
     // In such cases, we must set the swap extent to the size of the window.
-    if (swap_extent.width == special_value || swap_extent.height == special_value) {
+    if (m_extent.width == special_value || m_extent.height == special_value) {
         const auto [framebuffer_width, framebuffer_height] = p_window.get_framebuffer_dimensions();
 
-        swap_extent.width = std::clamp(
+        m_extent.width = std::clamp(
             static_cast<uint32_t>(framebuffer_width), 
             surface_capabilities.maxImageExtent.width,
             surface_capabilities.minImageExtent.width
         );
 
-        swap_extent.height = std::clamp(
+        m_extent.height = std::clamp(
             static_cast<uint32_t>(framebuffer_height), 
             surface_capabilities.maxImageExtent.height,
             surface_capabilities.minImageExtent.height
@@ -78,7 +78,7 @@ swapchain_t::swapchain_t(const window_t& p_window, const physical_device_t& p_ph
         .minImageCount = std::min(surface_capabilities.minImageCount + 1, surface_capabilities.maxImageCount),
         .imageFormat = chosen_surface_format.format,
         .imageColorSpace = chosen_surface_format.colorSpace,
-        .imageExtent = swap_extent,
+        .imageExtent = m_extent,
         .imageArrayLayers = 1,
         .imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
 
