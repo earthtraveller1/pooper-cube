@@ -84,6 +84,10 @@ namespace pooper_cube {
                 return m_images.at(index);
             }
 
+            auto get_image_view(uint32_t index) const -> VkImageView {
+                return m_image_views.at(index);
+            }
+
             ~swapchain_t() noexcept {
                 std::for_each(m_image_views.cbegin(), m_image_views.cend(), [this](auto view) { vkDestroyImageView(m_device, view, nullptr); });
                 vkDestroySwapchainKHR(m_device, m_swapchain, nullptr);
