@@ -251,9 +251,29 @@ auto main(int p_argc, char** p_argv) -> int {
                 "Failed to submit the command buffer to the graphics queue!"
             );
 
+            const VkSwapchainKHR swapchain_raw = swapchain;
+
+            const VkPresentInfoKHR present_info {
+                .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+                .pNext = nullptr,
+                .waitSemaphoreCount = 1,
+                .pWaitSemaphores = &rendering_done_semaphore_raw,
+                .swapchainCount = 1,
+                .pSwapchains = &swapchain_raw,
+                .pImageIndices = &image_index,
+                .pResults = nullptr,
+            };
+
+            VK_ERROR(
+                vkQueuePresentKHR(logical_device.get_present_queue(), &present_info),
+                "Failed to present to the screen!"
+            );
+
 #undef VK_ERROR
             window.poll_events();
         }
+
+        vkDeviceWaitIdle(logical_device);
     } catch (window_t::creation_exception_t exception) {
         using exception_t = window_t::creation_exception_t;
 
