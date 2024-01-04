@@ -147,6 +147,84 @@ auto main(int p_argc, char** p_argv) -> int {
                 1, &image_barrier
             );
 
+            const VkRenderingAttachmentInfo attachment_info {
+                .sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
+                .pNext = nullptr,
+                .imageView = swapchain.get_image_view(image_index),
+                .imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                .resolveMode = static_cast<VkResolveModeFlagBits>(0),
+                .resolveImageView = VK_NULL_HANDLE,
+                .resolveImageLayout = static_cast<VkImageLayout>(0),
+                .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+                .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+                .clearValue = {
+                    .color = {
+                        .float32 = {
+                            0.0f, 0.0f, 0.0f, 1.0f
+                        }
+                    }
+                }
+            };
+
+            const VkRenderingInfo rendering_info {
+                .sType = VK_STRUCTURE_TYPE_RENDERING_INFO,
+                .pNext = nullptr,
+                .flags = 0,
+                .renderArea = {
+                    .offset = {
+                        .x = 0,
+                        .y = 0,
+                    },
+                    .extent = swapchain.get_extent(),
+                },
+                .layerCount = 0,
+                .viewMask = 0,
+                .colorAttachmentCount = 1,
+                .pColorAttachments = &attachment_info,
+                .pDepthAttachment = nullptr,
+                .pStencilAttachment = nullptr
+            };
+
+            vkCmdBeginRendering(command_buffer, &rendering_info);
+
+            // Rendering code goes here.
+
+            vkCmdEndRendering(command_buffer);
+
+            const VkImageMemoryBarrier image_barrier_2 {
+                .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
+                .pNext = nullptr,
+                .srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+                .dstAccessMask = 0,
+                .oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                .newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+                .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+                .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+                .image = swapchain.get_image(image_index),
+                .subresourceRange = {
+                    .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                    .baseMipLevel = 0,
+                    .levelCount = 1,
+                    .baseArrayLayer = 0,
+                    .layerCount = 1
+                }
+            };
+
+            vkCmdPipelineBarrier(
+                command_buffer,
+                VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+                VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
+                0, 
+                0, nullptr, 
+                0, nullptr, 
+                1, &image_barrier_2
+            );
+            
+            VK_ERROR(
+                vkEndCommandBuffer(command_buffer),
+                "Failed to stop recording the command buffer"
+            );
+
 #undef VK_ERROR
             window.poll_events();
         }
