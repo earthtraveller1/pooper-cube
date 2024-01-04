@@ -125,7 +125,7 @@ auto main(int p_argc, char** p_argv) -> int {
             stderr,
             fmt::fg(fmt::color::red),
             "[VULKAN ERROR {}]: {}\n",
-            exception.error_code, exception.what
+            static_cast<int>(exception.error_code), exception.what
         );
 
         return EXIT_FAILURE;
