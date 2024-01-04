@@ -64,7 +64,7 @@ auto main(int p_argc, char** p_argv) -> int {
         const pipeline_layout_t pipeline_layout{logical_device, set_layouts, push_constant_ranges};
         const graphics_pipeline_t graphics_pipeline{logical_device, vertex_shader, fragment_shader, pipeline_layout};
 
-        const buffer_t vertex_buffer{physical_device, logical_device, buffer_t::type_t::vertex, 3*sizeof(float)};
+        const buffer_t vertex_buffer{physical_device, logical_device, buffer_t::type_t::vertex, 3*sizeof(pooper_cube::vertex_t)};
 
         {
             const pooper_cube::vertex_t vertices[] {
@@ -191,7 +191,34 @@ auto main(int p_argc, char** p_argv) -> int {
 
             vkCmdBeginRendering(command_buffer, &rendering_info);
 
-            // Rendering code goes here.
+            vkCmdBindPipeline(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphics_pipeline);
+
+            const VkViewport viewport {
+                .x = 0,
+                .y = 0,
+                .width = static_cast<float>(swapchain.get_extent().width),
+                .height = static_cast<float>(swapchain.get_extent().height),
+                .minDepth = 0.0f,
+                .maxDepth = 1.0f,
+            };
+
+            vkCmdSetViewport(command_buffer, 0, 1, &viewport);
+
+            const VkRect2D scissor {
+                .offset = {
+                    .x = 0,
+                    .y = 0,
+                },
+                .extent = swapchain.get_extent()
+            };
+
+            vkCmdSetScissor(command_buffer, 0, 1, &scissor);
+
+            const VkDeviceSize offset = 0;
+            const VkBuffer vertex_buffer_raw = vertex_buffer;
+            vkCmdBindVertexBuffers(command_buffer, 0, 1, &vertex_buffer_raw, &offset);
+
+            vkCmdDraw(command_buffer, 3, 1, 0, 0);
 
             vkCmdEndRendering(command_buffer);
 
