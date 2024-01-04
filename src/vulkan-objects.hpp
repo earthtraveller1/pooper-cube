@@ -258,9 +258,9 @@ namespace pooper_cube {
             semaphore_t(const device_t& device);
             NO_COPY(semaphore_t);
 
-            operator VkSemaphore() { return m_handle; }
+            operator VkSemaphore() const noexcept { return m_handle; }
 
-            ~semaphore_t() {
+            ~semaphore_t() noexcept {
                 vkDestroySemaphore(m_device, m_handle, nullptr);
             }
 
@@ -274,9 +274,9 @@ namespace pooper_cube {
             fence_t(const device_t& device);
             NO_COPY(fence_t);
 
-            operator VkFence() { return m_handle; }
+            operator VkFence() const noexcept { return m_handle; }
 
-            ~fence_t() {
+            ~fence_t() noexcept {
                 vkDestroyFence(m_device, m_handle, nullptr);
             }
 
