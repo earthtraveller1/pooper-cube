@@ -182,6 +182,8 @@ namespace pooper_cube {
             graphics_pipeline_t(const device_t& device, const shader_module_t& vertex_module, const shader_module_t& fragment_module, const pipeline_layout_t& layout);
             NO_COPY(graphics_pipeline_t);
 
+            operator VkPipeline() const noexcept { return m_pipeline; }
+
             ~graphics_pipeline_t() noexcept {
                 vkDestroyPipeline(m_device, m_pipeline, nullptr);
             }
