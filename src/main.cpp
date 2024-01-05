@@ -103,6 +103,10 @@ auto main(int p_argc, char** p_argv) -> int {
             
             result = vkAcquireNextImageKHR(logical_device, swapchain, std::numeric_limits<uint64_t>::max(), acquired_image_semaphore, VK_NULL_HANDLE, &image_index);
             if (result == VK_ERROR_OUT_OF_DATE_KHR) {
+                VK_ERROR(vkDeviceWaitIdle(logical_device), "Failed to wait for the device to complete operations.");
+                // The old swap chain must be destroyed before replacing it with a new one, and that 
+                // is done in this case by setting it to a null swap chain.
+                swapchain = swapchain_t{logical_device}; 
                 swapchain = swapchain_t{window, physical_device, logical_device, window_surface};
                 continue;
             } else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
@@ -299,7 +303,13 @@ auto main(int p_argc, char** p_argv) -> int {
 
             result = vkQueuePresentKHR(logical_device.get_present_queue(), &present_info);
             if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR) {
+                vkDeviceWaitIdle(logical_device);
+                // The old swap chain must be destroyed before replacing it with a new one, and that 
+                // is done in this case by setting it to a null swap chain.
+                swapchain = swapchain_t{logical_device}; 
                 swapchain = swapchain_t{window, physical_device, logical_device, window_surface};
+            } else if (result != VK_SUCCESS) {
+                throw generic_vulkan_exception_t{result, "Failed to present to the swap chain."};
             }
 
 #undef VK_ERROR
