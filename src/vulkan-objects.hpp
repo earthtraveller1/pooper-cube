@@ -68,6 +68,14 @@ namespace pooper_cube {
 
     class swapchain_t {
         public:
+            swapchain_t(const device_t& device) : 
+                m_swapchain(VK_NULL_HANDLE),
+                m_extent{},
+                m_images{},
+                m_image_views{},
+                m_device(device)
+            {}
+
             explicit swapchain_t(
                 const window_t& window, 
                 const physical_device_t& physical_device, 
