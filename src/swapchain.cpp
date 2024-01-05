@@ -173,9 +173,13 @@ auto swapchain_t::operator=(swapchain_t&& other) -> swapchain_t& {
 
     m_swapchain = other.m_swapchain;
     m_image_views = std::move(other.m_image_views);
-    m_images = std::move(m_images);
+    m_images = std::move(other.m_images);
+    m_extent = other.m_extent;
 
     other.m_swapchain = VK_NULL_HANDLE;
+    other.m_images = {};
+    other.m_image_views = {};
+    other.m_extent = {};
 
     return *this;
 }
