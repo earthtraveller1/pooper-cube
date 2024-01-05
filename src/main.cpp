@@ -51,7 +51,7 @@ auto main(int p_argc, char** p_argv) -> int {
         }
 
         const device_t logical_device{physical_device};
-        const swapchain_t swapchain{window, physical_device, logical_device, window_surface};
+        swapchain_t swapchain{window, physical_device, logical_device, window_surface};
 
         const command_pool_t command_pool{logical_device, physical_device.graphics_queue_family};
 
@@ -99,15 +99,21 @@ auto main(int p_argc, char** p_argv) -> int {
                 vkWaitForFences(logical_device, 1, &rendering_done_fence_raw, VK_TRUE, std::numeric_limits<uint64_t>::max()),
                 "Failed to wait for fences"
             );
+            uint32_t image_index;
+            
+            result = vkAcquireNextImageKHR(logical_device, swapchain, std::numeric_limits<uint64_t>::max(), acquired_image_semaphore, VK_NULL_HANDLE, &image_index);
+            if (result == VK_ERROR_OUT_OF_DATE_KHR) {
+                swapchain = swapchain_t{window, physical_device, logical_device, window_surface};
+                continue;
+            } else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
+                throw generic_vulkan_exception_t{result, "Failed to retrieve an image from the swap chain."};
+            }
+
             VK_ERROR(
                 vkResetFences(logical_device, 1, &rendering_done_fence_raw),
                 "Failed to reset the fences!"
             );
-            uint32_t image_index;
-            VK_ERROR(
-                vkAcquireNextImageKHR(logical_device, swapchain, std::numeric_limits<uint64_t>::max(), acquired_image_semaphore, VK_NULL_HANDLE, &image_index),
-                "Failed to acquire an image from the swap chain"
-            );
+
             VK_ERROR(vkResetCommandBuffer(command_buffer, 0), "Failed to reset the command buffer!");
 
             const VkCommandBufferBeginInfo command_buffer_begin_info {
@@ -291,10 +297,10 @@ auto main(int p_argc, char** p_argv) -> int {
                 .pResults = nullptr,
             };
 
-            VK_ERROR(
-                vkQueuePresentKHR(logical_device.get_present_queue(), &present_info),
-                "Failed to present to the screen!"
-            );
+            result = vkQueuePresentKHR(logical_device.get_present_queue(), &present_info);
+            if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR) {
+                swapchain = swapchain_t{window, physical_device, logical_device, window_surface};
+            }
 
 #undef VK_ERROR
             window.poll_events();
