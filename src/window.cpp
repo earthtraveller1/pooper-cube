@@ -17,7 +17,7 @@ window_t::window_t(uint16_t p_width, uint16_t p_height, std::string_view p_title
 
     glfwSetErrorCallback(error_callback);
 
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+    // glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
