@@ -78,6 +78,8 @@ namespace pooper_cube {
             swapchain_t(const swapchain_t&) = delete;
             auto operator=(const swapchain_t&) = delete;
 
+            auto operator=(swapchain_t&&) -> swapchain_t&;
+
             operator VkSwapchainKHR() const noexcept { return m_swapchain; }
 
             auto get_image(uint32_t index) const -> VkImage {

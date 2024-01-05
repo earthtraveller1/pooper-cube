@@ -165,3 +165,17 @@ swapchain_t::swapchain_t(const window_t& p_window, const physical_device_t& p_ph
     );
 }
 
+auto swapchain_t::operator=(swapchain_t&& other) -> swapchain_t& {
+    vkDestroySwapchainKHR(m_device, m_swapchain, nullptr);
+    for (auto view : m_image_views) {
+        vkDestroyImageView(m_device, view, nullptr);
+    }
+
+    m_swapchain = other.m_swapchain;
+    m_image_views = std::move(other.m_image_views);
+    m_images = std::move(m_images);
+
+    other.m_swapchain = VK_NULL_HANDLE;
+
+    return *this;
+}
