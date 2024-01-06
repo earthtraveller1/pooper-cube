@@ -1,8 +1,11 @@
-#include "common.hpp"
-#include "window.hpp"
-#include "vulkan-objects.hpp"
-#include <limits>
-#include <vulkan/vulkan_core.h>
+#include "buffers.hpp"
+#include "commands.hpp"
+#include "devices.hpp"
+#include "pipelines.hpp"
+#include "swapchain.hpp"
+#include "sync-objects.hpp"
+#include "vulkan-debug.hpp"
+#include "vulkan-instance.hpp"
 
 auto main(int p_argc, char** p_argv) -> int {
     using pooper_cube::choose_physical_device;

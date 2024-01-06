@@ -1,6 +1,6 @@
 #include "common.hpp"
 
-#include "vulkan-objects.hpp"
+#include "vulkan-debug.hpp"
 
 namespace {
     auto vk_create_debug_utils_messenger_ext(

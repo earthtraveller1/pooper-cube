@@ -1,7 +1,8 @@
 #include <fstream>
-#include <vulkan/vulkan_core.h>
 
-#include "vulkan-objects.hpp"
+#include "buffers.hpp"
+
+#include "pipelines.hpp"
 
 using pooper_cube::shader_module_t;
 using pooper_cube::graphics_pipeline_t;

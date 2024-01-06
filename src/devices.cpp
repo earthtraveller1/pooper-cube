@@ -1,6 +1,5 @@
+#include "devices.hpp"
 #include "common.hpp"
-#include "vulkan-objects.hpp"
-#include <vulkan/vulkan_core.h>
 
 using pooper_cube::device_t;
 

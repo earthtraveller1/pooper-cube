@@ -1,6 +1,8 @@
 #include "common.hpp"
 
-#include "vulkan-objects.hpp"
+#include "vulkan-debug.hpp"
+
+#include "vulkan-instance.hpp"
 
 using pooper_cube::instance_t;
 

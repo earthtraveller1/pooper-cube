@@ -2,7 +2,7 @@
 
 #include "common.hpp"
 
-#include "vulkan-objects.hpp"
+#include "swapchain.hpp"
 
 using pooper_cube::swapchain_t;
 

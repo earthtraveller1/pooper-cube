@@ -1,4 +1,4 @@
-#include "vulkan-objects.hpp"
+#include "sync-objects.hpp"
 
 using pooper_cube::semaphore_t;
 using pooper_cube::fence_t;
