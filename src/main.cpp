@@ -67,13 +67,14 @@ auto main(int p_argc, char** p_argv) -> int {
         const pipeline_layout_t pipeline_layout{logical_device, set_layouts, push_constant_ranges};
         const graphics_pipeline_t graphics_pipeline{logical_device, vertex_shader, fragment_shader, pipeline_layout};
 
-        const buffer_t vertex_buffer{physical_device, logical_device, buffer_t::type_t::vertex, 3*sizeof(pooper_cube::vertex_t)};
+        const buffer_t vertex_buffer{physical_device, logical_device, buffer_t::type_t::vertex, 4*sizeof(pooper_cube::vertex_t)};
 
         {
             const pooper_cube::vertex_t vertices[] {
-                {{0.0f, -0.5f, 0.0f}},
+                {{0.5f, -0.5f, 0.0f}},
                 {{0.5f, 0.5f, 0.0f}},
-                {{-0.5f, 0.5f, 0.0f}}
+                {{-0.5f, 0.5f, 0.0f}},
+                {{-0.5f, -0.5f, 0.0f}}
             };
 
             const pooper_cube::staging_buffer_t staging_buffer{physical_device, logical_device, sizeof(vertices)};
@@ -84,6 +85,24 @@ auto main(int p_argc, char** p_argv) -> int {
             }
 
             vertex_buffer.copy_from(staging_buffer, command_pool);
+        }
+
+        const buffer_t index_buffer{physical_device, logical_device, buffer_t::type_t::element, 6*sizeof(uint32_t)};
+
+        {
+            const uint32_t indices[] {
+                0, 1, 2,
+                0, 2, 3
+            };
+
+            const pooper_cube::staging_buffer_t staging_buffer{physical_device, logical_device, sizeof(indices)};
+
+            {
+                const auto memory = staging_buffer.map_memory();
+                std::memcpy(memory, indices, sizeof(indices));
+            }
+
+            index_buffer.copy_from(staging_buffer, command_pool);
         }
 
         const semaphore_t acquired_image_semaphore{logical_device}, rendering_done_semaphore{logical_device};
@@ -230,8 +249,10 @@ auto main(int p_argc, char** p_argv) -> int {
             const VkDeviceSize offset = 0;
             const VkBuffer vertex_buffer_raw = vertex_buffer;
             vkCmdBindVertexBuffers(command_buffer, 0, 1, &vertex_buffer_raw, &offset);
+            vkCmdBindIndexBuffer(command_buffer, index_buffer, 0, VK_INDEX_TYPE_UINT32);
 
-            vkCmdDraw(command_buffer, 3, 1, 0, 0);
+            // vkCmdDraw(command_buffer, 3, 1, 0, 0);
+            vkCmdDrawIndexed(command_buffer, 6, 1, 0, 0, 0);
 
             vkCmdEndRendering(command_buffer);
 
