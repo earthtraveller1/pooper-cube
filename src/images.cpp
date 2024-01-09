@@ -40,4 +40,10 @@ namespace pooper_cube {
             throw vulkan_creation_exception_t{result, "image"};
         }
     }
+
+    image_t::~image_t() noexcept {
+        vkFreeMemory(m_device, m_memory, nullptr);
+        vkDestroyImageView(m_device, m_view, nullptr);
+        vkDestroyImage(m_device, m_image, nullptr);
+    }
 }
