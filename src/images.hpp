@@ -10,6 +10,8 @@ namespace pooper_cube {
             image_t(const device_t& device, uint32_t width, uint32_t height);
             NO_COPY(image_t);
 
+            operator VkImage() const noexcept { return m_image; }
+
             ~image_t();
 
         private:
