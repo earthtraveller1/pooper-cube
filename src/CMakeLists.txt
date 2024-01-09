@@ -16,6 +16,7 @@ target_sources(
     buffers.cpp
     window.hpp
     common.hpp
+    images.hpp
     window.cpp
     main.cpp
     pch.hpp
