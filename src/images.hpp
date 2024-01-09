@@ -7,7 +7,11 @@ namespace pooper_cube {
 
     class image_t {
         public:
-            image_t(const device_t& device, uint32_t width, uint32_t height);
+            enum class type_t {
+                sampled, depth_buffer
+            };
+        
+            image_t(const device_t& device, uint32_t width, uint32_t height, type_t type);
             NO_COPY(image_t);
 
             operator VkImage() const noexcept { return m_image; }
