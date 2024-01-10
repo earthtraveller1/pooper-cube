@@ -1,9 +1,12 @@
 #pragma once
 
+#include "common.hpp"
 #include "window.hpp"
 #include "devices.hpp"
 
 namespace pooper_cube {
+    class render_pass_t;
+
     class swapchain_t {
         public:
             swapchain_t(const device_t& device) : 
@@ -60,4 +63,23 @@ namespace pooper_cube {
             const device_t& m_device;
     };
 
+    class framebuffer_t {
+        public:
+            framebuffer_t(const device_t& device, const swapchain_t& swapchain, const render_pass_t& render_pass);
+            NO_COPY(framebuffer_t);
+
+            auto get(uint32_t index) -> VkFramebuffer {
+                return m_framebuffers.at(index);
+            }
+
+            ~framebuffer_t() {
+                for (const auto framebuffer : m_framebuffers) {
+                    vkDestroyFramebuffer(m_device, framebuffer, nullptr);
+                }
+            }
+
+        private:
+            std::vector<VkFramebuffer> m_framebuffers;
+            const device_t& m_device;
+    };
 }

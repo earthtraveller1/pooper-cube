@@ -1,6 +1,7 @@
 #include <algorithm>
 
 #include "common.hpp"
+#include "pipelines.hpp"
 
 #include "swapchain.hpp"
 
@@ -182,4 +183,36 @@ auto swapchain_t::operator=(swapchain_t&& other) -> swapchain_t& {
     other.m_extent = {};
 
     return *this;
+}
+
+namespace pooper_cube {
+    framebuffer_t::framebuffer_t(const device_t& p_device, const swapchain_t& p_swapchain, const render_pass_t& p_render_pass)
+        : m_device(p_device)
+    {
+        const auto& image_views = p_swapchain.get_image_views();
+        const auto extent = p_swapchain.get_extent();
+        m_framebuffers.reserve(image_views.size()); // Reserve the space for all the framebuffers.
+
+        for (auto image_view : image_views) {
+            const VkFramebufferCreateInfo framebuffer_info {
+                .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
+                .pNext = nullptr,
+                .flags = 0,
+                .renderPass = p_render_pass,
+                .attachmentCount = 1,
+                .pAttachments = &image_view,
+                .width = extent.width,
+                .height = extent.height,
+                .layers = 1,
+            };
+
+            VkFramebuffer framebuffer;
+            const auto result = vkCreateFramebuffer(m_device, &framebuffer_info, nullptr, &framebuffer);
+            if (result != VK_SUCCESS) {
+                throw vulkan_creation_exception_t{result, "framebuffer"};
+            }
+
+            m_framebuffers.push_back(framebuffer);
+        }
+    }
 }
