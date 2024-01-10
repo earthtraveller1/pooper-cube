@@ -36,6 +36,10 @@ namespace pooper_cube {
                 return m_image_views.at(index);
             }
 
+            auto get_image_views() const -> const std::vector<VkImageView>& {
+                return m_image_views;
+            }
+
             auto get_extent() const noexcept -> VkExtent2D {
                 return m_extent;
             }
