@@ -70,6 +70,8 @@ auto main(int p_argc, char** p_argv) -> int {
         const render_pass_t render_pass{logical_device, swapchain.get_format()};
         const graphics_pipeline_t graphics_pipeline{logical_device, vertex_shader, fragment_shader, pipeline_layout, render_pass};
 
+        const framebuffers_t framebuffers{logical_device, swapchain, render_pass};
+
         const buffer_t vertex_buffer{physical_device, logical_device, buffer_t::type_t::vertex, 4*sizeof(pooper_cube::vertex_t)};
 
         {
@@ -157,74 +159,31 @@ auto main(int p_argc, char** p_argv) -> int {
                 "Failed to start recording the command buffer!"
             );
 
-            const VkImageMemoryBarrier image_barrier {
-                .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-                .pNext = nullptr,
-                .srcAccessMask = 0,
-                .dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-                .oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-                .newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-                .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-                .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-                .image = swapchain.get_image(image_index),
-                .subresourceRange = {
-                    .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-                    .baseMipLevel = 0,
-                    .levelCount = 1,
-                    .baseArrayLayer = 0,
-                    .layerCount = 1
-                }
-            };
-
-            vkCmdPipelineBarrier(
-                command_buffer, 
-                VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, 
-                VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, 
-                0, 
-                0, nullptr, 
-                0, nullptr, 
-                1, &image_barrier
-            );
-
-            const VkRenderingAttachmentInfo attachment_info {
-                .sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
-                .pNext = nullptr,
-                .imageView = swapchain.get_image_view(image_index),
-                .imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-                .resolveMode = static_cast<VkResolveModeFlagBits>(0),
-                .resolveImageView = VK_NULL_HANDLE,
-                .resolveImageLayout = static_cast<VkImageLayout>(0),
-                .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-                .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
-                .clearValue = {
-                    .color = {
-                        .float32 = {
-                            0.0f, 0.0f, 0.0f, 1.0f
-                        }
+            const VkClearValue clear_value {
+                .color = {
+                    .float32 = {
+                        0.0f, 0.0f, 0.0f, 1.0f
                     }
                 }
             };
 
-            const VkRenderingInfo rendering_info {
-                .sType = VK_STRUCTURE_TYPE_RENDERING_INFO,
+            const VkRenderPassBeginInfo render_pass_begin_info {
+                .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
                 .pNext = nullptr,
-                .flags = 0,
+                .renderPass = render_pass,
+                .framebuffer = framebuffers.get(image_index),
                 .renderArea = {
                     .offset = {
                         .x = 0,
                         .y = 0,
                     },
-                    .extent = swapchain.get_extent(),
+                    .extent = swapchain.get_extent()
                 },
-                .layerCount = 1,
-                .viewMask = 0,
-                .colorAttachmentCount = 1,
-                .pColorAttachments = &attachment_info,
-                .pDepthAttachment = nullptr,
-                .pStencilAttachment = nullptr
+                .clearValueCount = 1,
+                .pClearValues = &clear_value,
             };
-
-            vkCmdBeginRendering(command_buffer, &rendering_info);
+            
+            vkCmdBeginRenderPass(command_buffer, &render_pass_begin_info, VK_SUBPASS_CONTENTS_INLINE);
 
             vkCmdBindPipeline(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphics_pipeline);
 
@@ -257,37 +216,8 @@ auto main(int p_argc, char** p_argv) -> int {
             // vkCmdDraw(command_buffer, 3, 1, 0, 0);
             vkCmdDrawIndexed(command_buffer, 6, 1, 0, 0, 0);
 
-            vkCmdEndRendering(command_buffer);
+            vkCmdEndRenderPass(command_buffer);
 
-            const VkImageMemoryBarrier image_barrier_2 {
-                .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-                .pNext = nullptr,
-                .srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-                .dstAccessMask = 0,
-                .oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-                .newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
-                .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-                .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-                .image = swapchain.get_image(image_index),
-                .subresourceRange = {
-                    .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-                    .baseMipLevel = 0,
-                    .levelCount = 1,
-                    .baseArrayLayer = 0,
-                    .layerCount = 1
-                }
-            };
-
-            vkCmdPipelineBarrier(
-                command_buffer,
-                VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-                VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
-                0, 
-                0, nullptr, 
-                0, nullptr, 
-                1, &image_barrier_2
-            );
-            
             VK_ERROR(
                 vkEndCommandBuffer(command_buffer),
                 "Failed to stop recording the command buffer"
