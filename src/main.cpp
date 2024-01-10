@@ -24,6 +24,8 @@ auto main(int p_argc, char** p_argv) -> int {
     using pooper_cube::buffer_t;
     using pooper_cube::semaphore_t;
     using pooper_cube::fence_t;
+    using pooper_cube::render_pass_t;
+    using pooper_cube::framebuffer_t;
 
     bool enable_validation = false;
 
@@ -65,7 +67,8 @@ auto main(int p_argc, char** p_argv) -> int {
         const std::vector<VkPushConstantRange> push_constant_ranges;
 
         const pipeline_layout_t pipeline_layout{logical_device, set_layouts, push_constant_ranges};
-        const graphics_pipeline_t graphics_pipeline{logical_device, vertex_shader, fragment_shader, pipeline_layout};
+        const render_pass_t render_pass{logical_device, swapchain.get_format()};
+        const graphics_pipeline_t graphics_pipeline{logical_device, vertex_shader, fragment_shader, pipeline_layout, render_pass};
 
         const buffer_t vertex_buffer{physical_device, logical_device, buffer_t::type_t::vertex, 4*sizeof(pooper_cube::vertex_t)};
 

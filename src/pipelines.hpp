@@ -74,7 +74,14 @@ namespace pooper_cube {
 
     class graphics_pipeline_t {
         public:
-            graphics_pipeline_t(const device_t& device, const shader_module_t& vertex_module, const shader_module_t& fragment_module, const pipeline_layout_t& layout);
+            graphics_pipeline_t(
+                    const device_t& device, 
+                    const shader_module_t& vertex_module, 
+                    const shader_module_t& fragment_module, 
+                    const pipeline_layout_t& layout,
+                    const render_pass_t& render_pass
+            );
+
             NO_COPY(graphics_pipeline_t);
 
             operator VkPipeline() const noexcept { return m_pipeline; }

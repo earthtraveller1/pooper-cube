@@ -118,7 +118,8 @@ graphics_pipeline_t::graphics_pipeline_t(
         const device_t& p_device, 
         const shader_module_t& p_vertex_module, 
         const shader_module_t& p_fragment_module,
-        const pipeline_layout_t& p_layout
+        const pipeline_layout_t& p_layout,
+        const render_pass_t& p_render_pass
 ) : m_device(p_device) {
     const std::array<VkPipelineShaderStageCreateInfo, 2> shader_stages {
         p_vertex_module.get_shader_stage(),
