@@ -51,6 +51,8 @@ swapchain_t::swapchain_t(const window_t& p_window, const physical_device_t& p_ph
         }
     }
 
+    m_format = chosen_surface_format.format;
+
     uint32_t present_mode_count;
     vkGetPhysicalDeviceSurfacePresentModesKHR(p_physical_device, p_surface, &present_mode_count, nullptr);
 

@@ -47,6 +47,10 @@ namespace pooper_cube {
                 return m_extent;
             }
 
+            auto get_format() const noexcept -> VkFormat {
+                return m_format;
+            }
+
             ~swapchain_t() noexcept {
                 std::for_each(m_image_views.cbegin(), m_image_views.cend(), [this](auto view) { vkDestroyImageView(m_device, view, nullptr); });
                 vkDestroySwapchainKHR(m_device, m_swapchain, nullptr);
@@ -59,6 +63,7 @@ namespace pooper_cube {
             std::vector<VkImageView> m_image_views;
 
             VkExtent2D m_extent;
+            VkFormat m_format;
 
             const device_t& m_device;
     };
