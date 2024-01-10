@@ -40,15 +40,9 @@ device_t::device_t(const physical_device_t& p_physical_device) {
 
     const VkPhysicalDeviceFeatures enabled_features{};
 
-    const VkPhysicalDeviceDynamicRenderingFeatures dynamic_rendering_features {
-        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_FEATURES,
-        .pNext = nullptr,
-        .dynamicRendering = VK_TRUE,
-    };
-
     const VkDeviceCreateInfo device_info {
         .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
-        .pNext = &dynamic_rendering_features,
+        .pNext = nullptr,
         .flags = 0,
         .queueCreateInfoCount = static_cast<uint32_t>(queue_create_infos.size()),
         .pQueueCreateInfos = queue_create_infos.data(),
