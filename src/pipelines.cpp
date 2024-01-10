@@ -1,4 +1,5 @@
 #include <fstream>
+#include <vulkan/vulkan_core.h>
 
 #include "buffers.hpp"
 
@@ -61,6 +62,55 @@ pipeline_layout_t::pipeline_layout_t(
     const auto result = vkCreatePipelineLayout(m_device, &layout_info, nullptr, &m_layout);
     if (result != VK_SUCCESS) {
         throw vulkan_creation_exception_t{result, "pipeline layout"};
+    }
+}
+
+namespace pooper_cube {
+    render_pass_t::render_pass_t(const device_t& p_device, VkFormat p_format): m_device(p_device) {
+        const VkAttachmentDescription color_attachment {
+            .flags = 0,
+            .format = p_format,
+            .samples = VK_SAMPLE_COUNT_1_BIT,
+            .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+            .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+            .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+            .finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+        };
+
+        const VkAttachmentReference color_attachment_reference {
+            .attachment = 0,
+            .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+        };
+
+        const VkSubpassDescription subpass {
+            .flags = 0,
+            .pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
+            .inputAttachmentCount = 0,
+            .pInputAttachments = nullptr,
+            .colorAttachmentCount = 1,
+            .pColorAttachments = &color_attachment_reference,
+            .pResolveAttachments = nullptr,
+            .pDepthStencilAttachment = nullptr,
+            .preserveAttachmentCount = 0,
+            .pPreserveAttachments = nullptr,
+        };
+
+        const VkRenderPassCreateInfo render_pass_info {
+            .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
+            .pNext = nullptr,
+            .flags = 0,
+            .attachmentCount = 1,
+            .pAttachments = &color_attachment,
+            .subpassCount = 1,
+            .pSubpasses = &subpass,
+            .dependencyCount = 0,
+            .pDependencies = nullptr,
+        };
+
+        const auto result = vkCreateRenderPass(m_device, &render_pass_info, nullptr, &m_render_pass);
+        if (result != VK_SUCCESS) {
+            throw vulkan_creation_exception_t{result, "render pass"};
+        }
     }
 }
 

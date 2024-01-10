@@ -55,6 +55,23 @@ namespace pooper_cube {
             VkPipelineLayout m_layout;
     };
 
+    class render_pass_t {
+        public:
+            render_pass_t(const device_t& device, VkFormat format);
+            NO_COPY(render_pass_t);
+
+            operator VkRenderPass() const noexcept { return m_render_pass; }
+
+            ~render_pass_t() noexcept {
+                vkDestroyRenderPass(m_device, m_render_pass, nullptr);
+            }
+
+        private:
+            const device_t& m_device;
+
+            VkRenderPass m_render_pass;
+    };
+
     class graphics_pipeline_t {
         public:
             graphics_pipeline_t(const device_t& device, const shader_module_t& vertex_module, const shader_module_t& fragment_module, const pipeline_layout_t& layout);
@@ -69,5 +86,4 @@ namespace pooper_cube {
             VkPipeline m_pipeline;
             const device_t& m_device;
     };
-
 }
