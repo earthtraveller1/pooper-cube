@@ -73,7 +73,7 @@ namespace pooper_cube {
             framebuffers_t(const device_t& device, const swapchain_t& swapchain, const render_pass_t& render_pass);
             NO_COPY(framebuffers_t);
 
-            auto get(uint32_t index) -> VkFramebuffer {
+            auto get(uint32_t index) const noexcept -> VkFramebuffer {
                 return m_framebuffers.at(index);
             }
 
