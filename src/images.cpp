@@ -1,3 +1,4 @@
+#include "buffers.hpp"
 #include "common.hpp"
 #include "devices.hpp"
 
@@ -66,9 +67,29 @@ namespace pooper_cube {
                 break;
         }
 
-        const auto result = vkCreateImage(m_device, &image_info, nullptr, &m_image);
+        auto result = vkCreateImage(m_device, &image_info, nullptr, &m_image);
         if (result != VK_SUCCESS) {
             throw vulkan_creation_exception_t{result, "image"};
+        }
+
+        VkMemoryRequirements memory_requirements;
+        vkGetImageMemoryRequirements(m_device, m_image, &memory_requirements);
+
+        const auto memory_type_index = find_memory_type(p_physical_device, memory_requirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+        if (!memory_type_index.has_value()) {
+            throw generic_vulkan_exception_t{VK_SUCCESS, "Failed to find an adequate memory type for the image."};
+        }
+
+        VkMemoryAllocateInfo allocate_info {
+            .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
+            .pNext = nullptr,
+            .allocationSize = memory_requirements.size,
+            .memoryTypeIndex = memory_type_index.value(),
+        };
+
+        result = vkAllocateMemory(m_device, &allocate_info, nullptr, &m_memory);
+        if (result != VK_SUCCESS) {
+            throw vulkan_creation_exception_t{result, "memory for image"};
         }
     }
 
