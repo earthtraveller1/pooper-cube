@@ -2,9 +2,7 @@
 
 using pooper_cube::buffer_t;
 
-namespace {
-    using pooper_cube::physical_device_t;
-
+namespace pooper_cube {
     auto find_memory_type(const physical_device_t& p_physical_device, uint32_t p_type_filter, VkMemoryPropertyFlags properties) -> std::optional<uint32_t> {
         VkPhysicalDeviceMemoryProperties memory_properties;
         vkGetPhysicalDeviceMemoryProperties(p_physical_device, &memory_properties);
