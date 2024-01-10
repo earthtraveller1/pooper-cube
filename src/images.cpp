@@ -1,9 +1,35 @@
+#include "common.hpp"
 #include "devices.hpp"
 
 #include "images.hpp"
 
+namespace {
+    using pooper_cube::physical_device_t;
+
+    // Based on a code snippet from
+    // https://vulkan-tutorial.com/Depth_buffering#page_Depth-image-and-view
+    auto find_depth_format(const physical_device_t& p_physical_device) -> std::optional<VkFormat> {
+        const std::array<VkFormat, 3> candidates {
+            VK_FORMAT_D32_SFLOAT, 
+            VK_FORMAT_D32_SFLOAT_S8_UINT, 
+            VK_FORMAT_D24_UNORM_S8_UINT
+        };
+        
+        for (auto candidate : candidates) {
+            VkFormatProperties properties;
+            vkGetPhysicalDeviceFormatProperties(p_physical_device, candidate, &properties);
+
+            if (properties.optimalTilingFeatures & VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT) {
+                return candidate;
+            }
+        }
+
+        return std::optional<VkFormat>{};
+    }
+}
+
 namespace pooper_cube {
-    image_t::image_t(const device_t& p_device, uint32_t p_width, uint32_t p_height, type_t p_type) : m_device(p_device) {
+    image_t::image_t(const physical_device_t& p_physical_device, const device_t& p_device, uint32_t p_width, uint32_t p_height, type_t p_type) : m_device(p_device) {
         VkImageCreateInfo image_info {
             .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
             .pNext = nullptr,
@@ -30,7 +56,12 @@ namespace pooper_cube {
                 image_info.usage = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
                 break;
             case type_t::depth_buffer:
-                image_info.format = VK_FORMAT_D32_SFLOAT;
+                const auto format = find_depth_format(p_physical_device);
+                if (!format.has_value()) {
+                    throw generic_vulkan_exception_t{VK_SUCCESS, "There appears to be no usable depth format for some reasons."};
+                }
+
+                image_info.format = format.value();
                 image_info.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
                 break;
         }
