@@ -33,7 +33,7 @@ buffer_t::buffer_t(const physical_device_t& p_physical_device, const device_t& p
                 case type_t::vertex:
                     return VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
                 case type_t::element:
-                    return VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+                    return VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
                 case type_t::staging:
                     return VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
             }
