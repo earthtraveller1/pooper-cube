@@ -68,16 +68,16 @@ namespace pooper_cube {
             const device_t& m_device;
     };
 
-    class framebuffer_t {
+    class framebuffers_t {
         public:
-            framebuffer_t(const device_t& device, const swapchain_t& swapchain, const render_pass_t& render_pass);
-            NO_COPY(framebuffer_t);
+            framebuffers_t(const device_t& device, const swapchain_t& swapchain, const render_pass_t& render_pass);
+            NO_COPY(framebuffers_t);
 
             auto get(uint32_t index) -> VkFramebuffer {
                 return m_framebuffers.at(index);
             }
 
-            ~framebuffer_t() {
+            ~framebuffers_t() {
                 for (const auto framebuffer : m_framebuffers) {
                     vkDestroyFramebuffer(m_device, framebuffer, nullptr);
                 }

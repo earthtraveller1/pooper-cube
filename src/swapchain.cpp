@@ -188,7 +188,7 @@ auto swapchain_t::operator=(swapchain_t&& other) -> swapchain_t& {
 }
 
 namespace pooper_cube {
-    framebuffer_t::framebuffer_t(const device_t& p_device, const swapchain_t& p_swapchain, const render_pass_t& p_render_pass)
+    framebuffers_t::framebuffers_t(const device_t& p_device, const swapchain_t& p_swapchain, const render_pass_t& p_render_pass)
         : m_device(p_device)
     {
         const auto& image_views = p_swapchain.get_image_views();

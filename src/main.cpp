@@ -25,7 +25,7 @@ auto main(int p_argc, char** p_argv) -> int {
     using pooper_cube::semaphore_t;
     using pooper_cube::fence_t;
     using pooper_cube::render_pass_t;
-    using pooper_cube::framebuffer_t;
+    using pooper_cube::framebuffers_t;
 
     bool enable_validation = false;
 
