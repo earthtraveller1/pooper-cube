@@ -246,7 +246,7 @@ graphics_pipeline_t::graphics_pipeline_t(
         .pColorBlendState = &color_blend_state,
         .pDynamicState = &dynamic_state,
         .layout = p_layout,
-        .renderPass = VK_NULL_HANDLE,
+        .renderPass = p_render_pass,
         .subpass = 0,
         .basePipelineHandle = VK_NULL_HANDLE,
         .basePipelineIndex = -1,
