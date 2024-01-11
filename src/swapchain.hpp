@@ -76,6 +76,7 @@ namespace pooper_cube {
             NO_COPY(framebuffers_t);
 
             auto operator=(framebuffers_t&& other) -> const framebuffers_t& {
+                for (auto framebuffer : m_framebuffers) vkDestroyFramebuffer(m_device, framebuffer, nullptr);
                 m_framebuffers = std::move(other.m_framebuffers);
                 return *this;
             }
