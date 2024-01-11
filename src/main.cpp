@@ -70,7 +70,7 @@ auto main(int p_argc, char** p_argv) -> int {
         const render_pass_t render_pass{logical_device, swapchain.get_format()};
         const graphics_pipeline_t graphics_pipeline{logical_device, vertex_shader, fragment_shader, pipeline_layout, render_pass};
 
-        const framebuffers_t framebuffers{logical_device, swapchain, render_pass};
+        framebuffers_t framebuffers{logical_device, swapchain, render_pass};
 
         const buffer_t vertex_buffer{physical_device, logical_device, buffer_t::type_t::vertex, 4*sizeof(pooper_cube::vertex_t)};
 
@@ -132,9 +132,11 @@ auto main(int p_argc, char** p_argv) -> int {
             if (result == VK_ERROR_OUT_OF_DATE_KHR) {
                 VK_ERROR(vkDeviceWaitIdle(logical_device), "Failed to wait for the device to complete operations.");
                 // The old swap chain must be destroyed before replacing it with a new one, and that 
-                // is done in this case by setting it to a null swap chain.
+                // is done in this case by setting it to a null swap chain. Same thing with the framebuffers.
+                framebuffers = framebuffers_t{logical_device};
                 swapchain = swapchain_t{logical_device}; 
                 swapchain = swapchain_t{window, physical_device, logical_device, window_surface};
+                framebuffers = framebuffers_t{logical_device, swapchain, render_pass};
                 continue;
             } else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
                 throw generic_vulkan_exception_t{result, "Failed to retrieve an image from the swap chain."};
@@ -262,9 +264,11 @@ auto main(int p_argc, char** p_argv) -> int {
             if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR) {
                 vkDeviceWaitIdle(logical_device);
                 // The old swap chain must be destroyed before replacing it with a new one, and that 
-                // is done in this case by setting it to a null swap chain.
+                // is done in this case by setting it to a null swap chain. Same thing with the framebuffers.
+                framebuffers = framebuffers_t{logical_device};
                 swapchain = swapchain_t{logical_device}; 
                 swapchain = swapchain_t{window, physical_device, logical_device, window_surface};
+                framebuffers = framebuffers_t{logical_device, swapchain, render_pass};
             } else if (result != VK_SUCCESS) {
                 throw generic_vulkan_exception_t{result, "Failed to present to the swap chain."};
             }
