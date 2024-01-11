@@ -70,6 +70,8 @@ namespace pooper_cube {
 
     class framebuffers_t {
         public:
+            framebuffers_t(const device_t& device) : m_device(device), m_framebuffers{} {}
+
             framebuffers_t(const device_t& device, const swapchain_t& swapchain, const render_pass_t& render_pass);
             NO_COPY(framebuffers_t);
 
