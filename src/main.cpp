@@ -79,7 +79,7 @@ auto main(int p_argc, char** p_argv) -> int {
         const render_pass_t render_pass{logical_device, swapchain.get_format(), pooper_cube::find_depth_format(physical_device).value()};
         const graphics_pipeline_t graphics_pipeline{logical_device, vertex_shader, fragment_shader, pipeline_layout, render_pass};
 
-        framebuffers_t framebuffers{logical_device, swapchain, render_pass};
+        framebuffers_t framebuffers{logical_device, swapchain, depth_buffer, render_pass};
 
         const buffer_t vertex_buffer{physical_device, logical_device, buffer_t::type_t::vertex, 4*sizeof(pooper_cube::vertex_t)};
 
@@ -145,7 +145,7 @@ auto main(int p_argc, char** p_argv) -> int {
                 framebuffers = framebuffers_t{logical_device};
                 swapchain = swapchain_t{logical_device}; 
                 swapchain = swapchain_t{window, physical_device, logical_device, window_surface};
-                framebuffers = framebuffers_t{logical_device, swapchain, render_pass};
+                framebuffers = framebuffers_t{logical_device, swapchain, depth_buffer, render_pass};
                 continue;
             } else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
                 throw generic_vulkan_exception_t{result, "Failed to retrieve an image from the swap chain."};
@@ -170,10 +170,18 @@ auto main(int p_argc, char** p_argv) -> int {
                 "Failed to start recording the command buffer!"
             );
 
-            const VkClearValue clear_value {
-                .color = {
-                    .float32 = {
-                        0.0f, 0.0f, 0.0f, 1.0f
+            const std::array<VkClearValue, 2> clear_values {
+                VkClearValue {
+                    .color = {
+                        .float32 = {
+                            0.0f, 0.0f, 0.0f, 1.0f
+                        }
+                    }
+                },
+                VkClearValue {
+                    .depthStencil = {
+                        .depth = 1.0f,
+                        .stencil = 0,
                     }
                 }
             };
@@ -190,8 +198,8 @@ auto main(int p_argc, char** p_argv) -> int {
                     },
                     .extent = swapchain.get_extent()
                 },
-                .clearValueCount = 1,
-                .pClearValues = &clear_value,
+                .clearValueCount = clear_values.size(),
+                .pClearValues = clear_values.data(),
             };
             
             vkCmdBeginRenderPass(command_buffer, &render_pass_begin_info, VK_SUBPASS_CONTENTS_INLINE);
@@ -277,7 +285,7 @@ auto main(int p_argc, char** p_argv) -> int {
                 framebuffers = framebuffers_t{logical_device};
                 swapchain = swapchain_t{logical_device}; 
                 swapchain = swapchain_t{window, physical_device, logical_device, window_surface};
-                framebuffers = framebuffers_t{logical_device, swapchain, render_pass};
+                framebuffers = framebuffers_t{logical_device, swapchain, depth_buffer, render_pass};
             } else if (result != VK_SUCCESS) {
                 throw generic_vulkan_exception_t{result, "Failed to present to the swap chain."};
             }
