@@ -11,6 +11,13 @@ namespace pooper_cube {
             enum class type_t {
                 sampled, depth_buffer
             };
+
+            image_t(const device_t& device) :
+                m_image{VK_NULL_HANDLE},
+                m_view{VK_NULL_HANDLE},
+                m_memory{VK_NULL_HANDLE},
+                m_device{device}
+            {}
         
             image_t(const physical_device_t& physical_device, const device_t& device, uint32_t width, uint32_t height, type_t type);
             NO_COPY(image_t);
