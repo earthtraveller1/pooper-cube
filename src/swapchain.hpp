@@ -6,6 +6,7 @@
 
 namespace pooper_cube {
     class render_pass_t;
+    class image_t;
 
     class swapchain_t {
         public:
@@ -72,7 +73,7 @@ namespace pooper_cube {
         public:
             framebuffers_t(const device_t& device) : m_device(device), m_framebuffers{} {}
 
-            framebuffers_t(const device_t& device, const swapchain_t& swapchain, const render_pass_t& render_pass);
+            framebuffers_t(const device_t& device, const swapchain_t& swapchain, const image_t& depth_buffer, const render_pass_t& render_pass);
             NO_COPY(framebuffers_t);
 
             auto operator=(framebuffers_t&& other) -> const framebuffers_t& {

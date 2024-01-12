@@ -2,6 +2,7 @@
 
 #include "common.hpp"
 #include "pipelines.hpp"
+#include "images.hpp"
 
 #include "swapchain.hpp"
 
@@ -188,21 +189,27 @@ auto swapchain_t::operator=(swapchain_t&& other) -> swapchain_t& {
 }
 
 namespace pooper_cube {
-    framebuffers_t::framebuffers_t(const device_t& p_device, const swapchain_t& p_swapchain, const render_pass_t& p_render_pass)
-        : m_device(p_device)
+    framebuffers_t::framebuffers_t(
+        const device_t& p_device, 
+        const swapchain_t& p_swapchain, 
+        const image_t& p_depth_buffer,
+        const render_pass_t& p_render_pass
+    ) : m_device(p_device)
     {
         const auto& image_views = p_swapchain.get_image_views();
         const auto extent = p_swapchain.get_extent();
         m_framebuffers.reserve(image_views.size()); // Reserve the space for all the framebuffers.
 
         for (auto image_view : image_views) {
+            const std::array<VkImageView, 2> attachments { image_view, p_depth_buffer.get_view() };
+
             const VkFramebufferCreateInfo framebuffer_info {
                 .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
                 .pNext = nullptr,
                 .flags = 0,
                 .renderPass = p_render_pass,
-                .attachmentCount = 1,
-                .pAttachments = &image_view,
+                .attachmentCount = attachments.size(),
+                .pAttachments = attachments.data(),
                 .width = extent.width,
                 .height = extent.height,
                 .layers = 1,
