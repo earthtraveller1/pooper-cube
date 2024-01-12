@@ -87,6 +87,8 @@ namespace pooper_cube {
         if (result != VK_SUCCESS) {
             throw vulkan_creation_exception_t{result, "memory for image"};
         }
+
+        vkBindImageMemory(m_device, m_image, m_memory, 0);
     }
 
     image_t::~image_t() noexcept {
