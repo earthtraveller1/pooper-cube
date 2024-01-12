@@ -208,6 +208,21 @@ graphics_pipeline_t::graphics_pipeline_t(
         .alphaToOneEnable = VK_FALSE,
     };
 
+    const VkPipelineDepthStencilStateCreateInfo depth_stencil_state {
+        .sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
+        .pNext = nullptr,
+        .flags = 0,
+        .depthTestEnable = VK_TRUE,
+        .depthWriteEnable = VK_TRUE,
+        .depthCompareOp = VK_COMPARE_OP_LESS,
+        .depthBoundsTestEnable = VK_FALSE,
+        .stencilTestEnable = VK_FALSE,
+        .front = {},
+        .back = {},
+        .minDepthBounds = 0.0f,
+        .maxDepthBounds = 1.0f,
+    };
+
     const VkPipelineColorBlendAttachmentState color_blend_attachment {
         .blendEnable = VK_FALSE,
         .srcColorBlendFactor = VK_BLEND_FACTOR_ZERO,
@@ -261,7 +276,7 @@ graphics_pipeline_t::graphics_pipeline_t(
         .pViewportState = &viewport_state,
         .pRasterizationState = &rasterizer_state,
         .pMultisampleState = &multisampling_state,
-        .pDepthStencilState = nullptr,
+        .pDepthStencilState = &depth_stencil_state,
         .pColorBlendState = &color_blend_state,
         .pDynamicState = &dynamic_state,
         .layout = p_layout,
