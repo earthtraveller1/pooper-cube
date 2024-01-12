@@ -89,6 +89,40 @@ namespace pooper_cube {
         }
 
         vkBindImageMemory(m_device, m_image, m_memory, 0);
+
+        const VkImageViewCreateInfo view_info {
+            .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+            .pNext = nullptr,
+            .flags = 0,
+            .image = m_image,
+            .viewType = VK_IMAGE_VIEW_TYPE_2D,
+            .format = image_info.format,
+            .components = {
+                .r = VK_COMPONENT_SWIZZLE_IDENTITY,
+                .g = VK_COMPONENT_SWIZZLE_IDENTITY,
+                .b = VK_COMPONENT_SWIZZLE_IDENTITY,
+                .a = VK_COMPONENT_SWIZZLE_IDENTITY,
+            },
+            .subresourceRange = {
+                .aspectMask = [&](){
+                    switch (p_type) {
+                        case type_t::depth_buffer:
+                            return VK_IMAGE_ASPECT_DEPTH_BIT;
+                        case type_t::sampled:
+                            return VK_IMAGE_ASPECT_COLOR_BIT;
+                    }
+                }(),
+                .baseMipLevel = 0,
+                .levelCount = 1,
+                .baseArrayLayer = 0,
+                .layerCount = 1,
+            }
+        };
+
+        result = vkCreateImageView(m_device, &view_info, nullptr, &m_view);
+        if (result != VK_SUCCESS) {
+            throw vulkan_creation_exception_t{result, "image view"};
+        }
     }
 
     image_t::~image_t() noexcept {
