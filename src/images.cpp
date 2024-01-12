@@ -125,6 +125,18 @@ namespace pooper_cube {
         }
     }
 
+    auto image_t::operator=(image_t&& other) noexcept -> image_t& {
+        m_image = other.m_image;
+        m_memory = other.m_memory;
+        m_view = other.m_view;
+
+        other.m_view = VK_NULL_HANDLE;
+        other.m_memory = VK_NULL_HANDLE;
+        other.m_image = VK_NULL_HANDLE;
+
+        return *this;
+    }
+
     image_t::~image_t() noexcept {
         vkFreeMemory(m_device, m_memory, nullptr);
         vkDestroyImageView(m_device, m_view, nullptr);
