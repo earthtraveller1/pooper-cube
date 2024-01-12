@@ -28,7 +28,7 @@ namespace pooper_cube {
 
     image_t::image_t(const physical_device_t& p_physical_device, const device_t& p_device, uint32_t p_width, uint32_t p_height, type_t p_type) : m_device(p_device) {
         VkImageCreateInfo image_info {
-            .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+            .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
             .pNext = nullptr,
             .flags = 0,
             .imageType = VK_IMAGE_TYPE_2D,
