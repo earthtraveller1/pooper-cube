@@ -57,7 +57,7 @@ namespace pooper_cube {
 
     class render_pass_t {
         public:
-            render_pass_t(const device_t& device, VkFormat format);
+            render_pass_t(const device_t& device, VkFormat format, VkFormat depth_format);
             NO_COPY(render_pass_t);
 
             operator VkRenderPass() const noexcept { return m_render_pass; }

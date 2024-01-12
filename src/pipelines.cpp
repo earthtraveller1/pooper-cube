@@ -1,7 +1,7 @@
 #include <fstream>
-#include <vulkan/vulkan_core.h>
 
 #include "buffers.hpp"
+#include "images.hpp"
 
 #include "pipelines.hpp"
 
@@ -66,7 +66,7 @@ pipeline_layout_t::pipeline_layout_t(
 }
 
 namespace pooper_cube {
-    render_pass_t::render_pass_t(const device_t& p_device, VkFormat p_format): m_device(p_device) {
+    render_pass_t::render_pass_t(const device_t& p_device, VkFormat p_format, VkFormat p_depth_format): m_device(p_device) {
         const VkAttachmentDescription color_attachment {
             .flags = 0,
             .format = p_format,
@@ -77,10 +77,29 @@ namespace pooper_cube {
             .finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
         };
 
+        const VkAttachmentDescription depth_attachment {
+            .flags = 0,
+            .format = p_depth_format,
+            .samples = VK_SAMPLE_COUNT_1_BIT,
+            .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+            .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+            .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+            .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+            .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+            .finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
+        };
+
         const VkAttachmentReference color_attachment_reference {
             .attachment = 0,
             .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
         };
+
+        const VkAttachmentReference depth_attachment_reference {
+            .attachment = 1,
+            .layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, 
+        };
+
+        const std::array<VkAttachmentDescription, 2> attachments { color_attachment, depth_attachment };
 
         const VkSubpassDescription subpass {
             .flags = 0,
@@ -90,7 +109,7 @@ namespace pooper_cube {
             .colorAttachmentCount = 1,
             .pColorAttachments = &color_attachment_reference,
             .pResolveAttachments = nullptr,
-            .pDepthStencilAttachment = nullptr,
+            .pDepthStencilAttachment = &depth_attachment_reference,
             .preserveAttachmentCount = 0,
             .pPreserveAttachments = nullptr,
         };
@@ -99,8 +118,8 @@ namespace pooper_cube {
             .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
             .pNext = nullptr,
             .flags = 0,
-            .attachmentCount = 1,
-            .pAttachments = &color_attachment,
+            .attachmentCount = attachments.size(),
+            .pAttachments = attachments.data(),
             .subpassCount = 1,
             .pSubpasses = &subpass,
             .dependencyCount = 0,
