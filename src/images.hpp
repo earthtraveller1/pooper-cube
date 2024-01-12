@@ -26,4 +26,6 @@ namespace pooper_cube {
 
             const device_t& m_device;
     };
+
+    auto find_depth_format(const physical_device_t& p_physical_device) -> std::optional<VkFormat>; 
 }

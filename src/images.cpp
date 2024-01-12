@@ -4,9 +4,7 @@
 
 #include "images.hpp"
 
-namespace {
-    using pooper_cube::physical_device_t;
-
+namespace pooper_cube {
     // Based on a code snippet from
     // https://vulkan-tutorial.com/Depth_buffering#page_Depth-image-and-view
     auto find_depth_format(const physical_device_t& p_physical_device) -> std::optional<VkFormat> {
@@ -27,9 +25,7 @@ namespace {
 
         return std::optional<VkFormat>{};
     }
-}
 
-namespace pooper_cube {
     image_t::image_t(const physical_device_t& p_physical_device, const device_t& p_device, uint32_t p_width, uint32_t p_height, type_t p_type) : m_device(p_device) {
         VkImageCreateInfo image_info {
             .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
