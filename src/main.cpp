@@ -1,6 +1,7 @@
 #include "buffers.hpp"
 #include "commands.hpp"
 #include "devices.hpp"
+#include "images.hpp"
 #include "pipelines.hpp"
 #include "swapchain.hpp"
 #include "sync-objects.hpp"
@@ -66,8 +67,16 @@ auto main(int p_argc, char** p_argv) -> int {
         const std::vector<VkDescriptorSetLayout> set_layouts;
         const std::vector<VkPushConstantRange> push_constant_ranges;
 
+        const pooper_cube::image_t depth_buffer{
+            physical_device, 
+            logical_device, 
+            swapchain.get_extent().width, 
+            swapchain.get_extent().height, 
+            pooper_cube::image_t::type_t::depth_buffer
+        };
+
         const pipeline_layout_t pipeline_layout{logical_device, set_layouts, push_constant_ranges};
-        const render_pass_t render_pass{logical_device, swapchain.get_format()};
+        const render_pass_t render_pass{logical_device, swapchain.get_format(), pooper_cube::find_depth_format(physical_device).value()};
         const graphics_pipeline_t graphics_pipeline{logical_device, vertex_shader, fragment_shader, pipeline_layout, render_pass};
 
         framebuffers_t framebuffers{logical_device, swapchain, render_pass};
