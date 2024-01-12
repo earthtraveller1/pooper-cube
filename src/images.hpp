@@ -17,6 +17,8 @@ namespace pooper_cube {
 
             operator VkImage() const noexcept { return m_image; }
 
+            auto get_view() const noexcept { return m_view; }
+
             ~image_t() noexcept;
 
         private:
