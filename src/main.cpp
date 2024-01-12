@@ -27,6 +27,7 @@ auto main(int p_argc, char** p_argv) -> int {
     using pooper_cube::fence_t;
     using pooper_cube::render_pass_t;
     using pooper_cube::framebuffers_t;
+    using pooper_cube::image_t;
 
     bool enable_validation = false;
 
@@ -67,7 +68,7 @@ auto main(int p_argc, char** p_argv) -> int {
         const std::vector<VkDescriptorSetLayout> set_layouts;
         const std::vector<VkPushConstantRange> push_constant_ranges;
 
-        const pooper_cube::image_t depth_buffer{
+        pooper_cube::image_t depth_buffer{
             physical_device, 
             logical_device, 
             swapchain.get_extent().width, 
@@ -143,8 +144,10 @@ auto main(int p_argc, char** p_argv) -> int {
                 // The old swap chain must be destroyed before replacing it with a new one, and that 
                 // is done in this case by setting it to a null swap chain. Same thing with the framebuffers.
                 framebuffers = framebuffers_t{logical_device};
+                depth_buffer = image_t{logical_device};
                 swapchain = swapchain_t{logical_device}; 
                 swapchain = swapchain_t{window, physical_device, logical_device, window_surface};
+                depth_buffer = image_t{physical_device, logical_device, swapchain.get_extent().width, swapchain.get_extent().height, image_t::type_t::depth_buffer};
                 framebuffers = framebuffers_t{logical_device, swapchain, depth_buffer, render_pass};
                 continue;
             } else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
@@ -283,8 +286,10 @@ auto main(int p_argc, char** p_argv) -> int {
                 // The old swap chain must be destroyed before replacing it with a new one, and that 
                 // is done in this case by setting it to a null swap chain. Same thing with the framebuffers.
                 framebuffers = framebuffers_t{logical_device};
+                depth_buffer = image_t{logical_device};
                 swapchain = swapchain_t{logical_device}; 
                 swapchain = swapchain_t{window, physical_device, logical_device, window_surface};
+                depth_buffer = image_t{physical_device, logical_device, swapchain.get_extent().width, swapchain.get_extent().height, image_t::type_t::depth_buffer};
                 framebuffers = framebuffers_t{logical_device, swapchain, depth_buffer, render_pass};
             } else if (result != VK_SUCCESS) {
                 throw generic_vulkan_exception_t{result, "Failed to present to the swap chain."};
