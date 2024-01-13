@@ -12,9 +12,9 @@ namespace pooper_cube {
         public:
             swapchain_t(const device_t& device) : 
                 m_swapchain(VK_NULL_HANDLE),
-                m_extent{},
                 m_images{},
                 m_image_views{},
+                m_extent{},
                 m_device(device)
             {}
 
@@ -71,7 +71,7 @@ namespace pooper_cube {
 
     class framebuffers_t {
         public:
-            framebuffers_t(const device_t& device) : m_device(device), m_framebuffers{} {}
+            framebuffers_t(const device_t& device) : m_framebuffers{}, m_device(device) {}
 
             framebuffers_t(const device_t& device, const swapchain_t& swapchain, const image_t& depth_buffer, const render_pass_t& render_pass);
             NO_COPY(framebuffers_t);

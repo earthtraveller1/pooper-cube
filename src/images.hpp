@@ -4,7 +4,7 @@
 
 namespace pooper_cube {
     class device_t;
-    class physical_device_t;
+    struct physical_device_t;
 
     class image_t {
         public:
