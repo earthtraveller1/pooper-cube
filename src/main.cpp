@@ -396,7 +396,7 @@ auto main(int p_argc, char** p_argv) -> int {
                 .color_offset = static_cast<float>(std::sin(frame_time) / 2 + 0.5),
             };
 
-            vkCmdPushConstants(command_buffer, pipeline_layout, VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(push_constants_t), &push_constants);
+            vkCmdPushConstants(command_buffer, pipeline_layout, VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(push_constants_t), &push_constants);
 
             const auto window_dimensions = window.get_dimensions();
             const auto aspect_ratio = static_cast<float>(window_dimensions.width) / static_cast<float>(window_dimensions.height);
