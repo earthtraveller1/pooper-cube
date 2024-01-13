@@ -6,6 +6,8 @@ target_sources(
     commands.cpp
     commands.hpp
     common.hpp
+    descriptors.hpp
+    descriptors.cpp
     devices.cpp
     devices.hpp
     images.cpp
