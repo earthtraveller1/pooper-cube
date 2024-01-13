@@ -28,6 +28,12 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(glfw fmt glm)
 
+if (NOT MSVC)
+    add_compile_options(-Wall -Wextra -Wpedantic)
+else()
+    add_compile_options(/W4)
+endif()
+
 add_executable(pooper-cube)
 target_link_libraries(pooper-cube PRIVATE Vulkan::Vulkan glfw fmt glm)
 
