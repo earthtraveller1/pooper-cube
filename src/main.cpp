@@ -29,42 +29,42 @@ namespace {
             pairs_t {-0.5f * p_size, -0.5f * p_size}
         };
 
+        const auto index_base = static_cast<uint32_t>(p_vertices.size());
+
         for (auto pair : pairs) {
             switch (p_side) {
                 case cube_side_t::front:
                     p_vertices.push_back(vertex_t {
-                        .position = {pair.a, pair.b, p_size * 0.5f}
+                        .position = {pair.a, pair.b, p_size * -0.5f}
                     });
                     break;
                 case cube_side_t::back:
                     p_vertices.push_back(vertex_t {
-                        .position = {pair.a, pair.b, p_size * -0.5f}
+                        .position = {pair.a, pair.b, p_size * 0.5f}
                     });
                     break;
                 case cube_side_t::right:
                     p_vertices.push_back(vertex_t {
-                        .position = {0.5f * p_size, pair.b, -pair.a}
+                        .position = {0.5f * p_size, pair.b, pair.a}
                     });
                     break;
                 case cube_side_t::left:
                     p_vertices.push_back(vertex_t {
-                        .position = {-0.5f * p_size, pair.b, pair.a}
+                        .position = {-0.5f * p_size, pair.b, -pair.a}
                     });
                     break;
                 case cube_side_t::top:
                     p_vertices.push_back(vertex_t {
-                        .position = {pair.a, 0.5f * p_size, pair.b}
+                        .position = {pair.a, -0.5f * p_size, pair.b}
                     });
                     break;
                 case cube_side_t::bottom:
                     p_vertices.push_back(vertex_t {
-                        .position = {pair.a, -0.5f * p_size, pair.b}
+                        .position = {pair.a, 0.5f * p_size, pair.b}
                     });
                     break;
             }
         }
-
-        const auto index_base = static_cast<uint32_t>(p_vertices.size());
 
         const auto is_back_side = p_side == cube_side_t::back |
                                   p_side == cube_side_t::bottom |
@@ -89,6 +89,30 @@ namespace {
                 index_base + 2
             });
         }
+    }
+
+    struct mesh_t {
+        std::vector<vertex_t> vertices;
+        std::vector<uint32_t> indices;
+    };
+
+    auto generate_cube(float p_size) -> mesh_t {
+        mesh_t mesh;
+
+        const std::array<cube_side_t, 6> cube_sides {
+            cube_side_t::front,
+            cube_side_t::back,
+            cube_side_t::right,
+            cube_side_t::left,
+            cube_side_t::top,
+            cube_side_t::bottom,
+        };
+
+        for (auto side : cube_sides) {
+            append_cube_face(mesh.vertices, mesh.indices, p_size, side);
+        }
+
+        return mesh;
     }
 }
 
@@ -234,39 +258,29 @@ auto main(int p_argc, char** p_argv) -> int {
 
         framebuffers_t framebuffers{logical_device, swapchain, depth_buffer, render_pass};
 
-        const buffer_t vertex_buffer{physical_device, logical_device, buffer_t::type_t::vertex, 4*sizeof(pooper_cube::vertex_t)};
+        const auto [vertices, indices] = generate_cube(1.0f);
+
+        const buffer_t vertex_buffer{physical_device, logical_device, buffer_t::type_t::vertex, vertices.size() * sizeof(vertices[0])};
 
         {
-            const pooper_cube::vertex_t vertices[] {
-                {{0.5f, -0.5f, 0.0f}},
-                {{0.5f, 0.5f, 0.0f}},
-                {{-0.5f, 0.5f, 0.0f}},
-                {{-0.5f, -0.5f, 0.0f}}
-            };
-
-            const pooper_cube::host_coherent_buffer_t staging_buffer{physical_device, logical_device, buffer_t::type_t::staging, sizeof(vertices)};
+            const pooper_cube::host_coherent_buffer_t staging_buffer{physical_device, logical_device, buffer_t::type_t::staging, vertices.size()*sizeof(vertices[0])};
 
             {
                 const auto memory = staging_buffer.map_memory();
-                std::memcpy(memory, vertices, sizeof(vertices));
+                std::memcpy(memory, vertices.data(), vertices.size() * sizeof(vertices[0]));
             }
 
             vertex_buffer.copy_from(staging_buffer, command_pool);
         }
 
-        const buffer_t index_buffer{physical_device, logical_device, buffer_t::type_t::element, 6*sizeof(uint32_t)};
+        const buffer_t index_buffer{physical_device, logical_device, buffer_t::type_t::element, indices.size() * sizeof(indices[0])};
 
         {
-            const uint32_t indices[] {
-                0, 1, 2,
-                0, 2, 3
-            };
-
-            const pooper_cube::host_coherent_buffer_t staging_buffer{physical_device, logical_device, buffer_t::type_t::staging, sizeof(indices)};
+            const pooper_cube::host_coherent_buffer_t staging_buffer{physical_device, logical_device, buffer_t::type_t::staging, indices.size()*sizeof(indices[0])};
 
             {
                 const auto memory = staging_buffer.map_memory();
-                std::memcpy(memory, indices, sizeof(indices));
+                std::memcpy(memory, indices.data(), indices.size() * sizeof(indices[0]));
             }
 
             index_buffer.copy_from(staging_buffer, command_pool);
@@ -402,14 +416,14 @@ auto main(int p_argc, char** p_argv) -> int {
             const auto aspect_ratio = static_cast<float>(window_dimensions.width) / static_cast<float>(window_dimensions.height);
 
             const uniform_buffer_object_t uniform_buffer_object {
-                .view = glm::translate(glm::mat4{1.0f} , glm::vec3{0.0f, 0.0f, -2.0f}),
+                .view = glm::translate(glm::mat4{1.0f} , glm::vec3{0.0f, 0.0f, -4.0f}),
                 .projection = glm::perspective(glm::radians(70.0f), aspect_ratio, 0.01f, 100.0f),
                 .color_offset = static_cast<float>(std::cos(frame_time) / 2 + 0.5),
             };
 
             memcpy(uniform_buffer_address, &uniform_buffer_object, sizeof(uniform_buffer_object));
 
-            vkCmdDrawIndexed(command_buffer, 6, 1, 0, 0, 0);
+            vkCmdDrawIndexed(command_buffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
 
             vkCmdEndRenderPass(command_buffer);
 
