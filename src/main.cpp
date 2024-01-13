@@ -1,5 +1,6 @@
 #include "buffers.hpp"
 #include "commands.hpp"
+#include "descriptors.hpp"
 #include "devices.hpp"
 #include "images.hpp"
 #include "pipelines.hpp"
@@ -28,6 +29,8 @@ auto main(int p_argc, char** p_argv) -> int {
     using pooper_cube::render_pass_t;
     using pooper_cube::framebuffers_t;
     using pooper_cube::image_t;
+    using pooper_cube::descriptor_pool_t;
+    using pooper_cube::descriptor_layout_t;
 
     bool enable_validation = false;
 
@@ -65,7 +68,17 @@ auto main(int p_argc, char** p_argv) -> int {
         const shader_module_t vertex_shader{logical_device, shader_module_t::type_t::vertex, "shaders/triangle.vert.spv"};
         const shader_module_t fragment_shader{logical_device, shader_module_t::type_t::fragment, "shaders/triangle.frag.spv"};
 
-        const std::array<VkDescriptorSetLayout, 0> set_layouts;
+        const descriptor_layout_t descriptor_layout{logical_device, std::array<VkDescriptorSetLayoutBinding, 1> {
+            VkDescriptorSetLayoutBinding {
+                .binding = 0,
+                .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+                .descriptorCount = 1,
+                .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT,
+                .pImmutableSamplers = nullptr
+            }
+        }};
+
+        const std::array<VkDescriptorSetLayout, 1> set_layouts{descriptor_layout};
         const std::array<VkPushConstantRange, 1> push_constant_ranges {
             VkPushConstantRange {
                 .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT,
@@ -73,6 +86,43 @@ auto main(int p_argc, char** p_argv) -> int {
                 .size = sizeof(float),
             }
         };
+
+        const descriptor_pool_t descriptor_pool{
+            logical_device, 
+            std::array<VkDescriptorPoolSize, 1> {
+                VkDescriptorPoolSize {
+                    .type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 
+                    .descriptorCount = 1
+                }
+            }, 
+            1
+        };
+
+        const auto descriptor_set = descriptor_pool.allocate_set(descriptor_layout);
+        const buffer_t uniform_buffer{physical_device, logical_device, buffer_t::type_t::uniform, sizeof(float)};
+
+        {
+            const VkDescriptorBufferInfo buffer_info{
+                .buffer = uniform_buffer,
+                .offset = 0,
+                .range = sizeof(float),
+            };
+
+            const VkWriteDescriptorSet descriptor_write{
+                .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+                .pNext = nullptr,
+                .dstSet = descriptor_set,
+                .dstBinding = 0,
+                .dstArrayElement = 0,
+                .descriptorCount = 1,
+                .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+                .pImageInfo = nullptr,
+                .pBufferInfo = &buffer_info,
+                .pTexelBufferView = nullptr,
+            };
+            
+            vkUpdateDescriptorSets(logical_device, 1, &descriptor_write, 0, nullptr);
+        }
 
         pooper_cube::image_t depth_buffer{
             physical_device, 
@@ -240,6 +290,9 @@ auto main(int p_argc, char** p_argv) -> int {
             const VkBuffer vertex_buffer_raw = vertex_buffer;
             vkCmdBindVertexBuffers(command_buffer, 0, 1, &vertex_buffer_raw, &offset);
             vkCmdBindIndexBuffer(command_buffer, index_buffer, 0, VK_INDEX_TYPE_UINT32);
+
+            const VkDescriptorSet descriptor_set_raw = descriptor_set;
+            vkCmdBindDescriptorSets(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, 1, &descriptor_set_raw, 0, nullptr);
 
             float color_offset = 0.0f;
             vkCmdPushConstants(command_buffer, pipeline_layout, VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(float), &color_offset);
