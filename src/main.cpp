@@ -65,8 +65,14 @@ auto main(int p_argc, char** p_argv) -> int {
         const shader_module_t vertex_shader{logical_device, shader_module_t::type_t::vertex, "shaders/triangle.vert.spv"};
         const shader_module_t fragment_shader{logical_device, shader_module_t::type_t::fragment, "shaders/triangle.frag.spv"};
 
-        const std::vector<VkDescriptorSetLayout> set_layouts;
-        const std::vector<VkPushConstantRange> push_constant_ranges;
+        const std::array<VkDescriptorSetLayout, 0> set_layouts;
+        const std::array<VkPushConstantRange, 1> push_constant_ranges {
+            VkPushConstantRange {
+                .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT,
+                .offset = 0,
+                .size = sizeof(float),
+            }
+        };
 
         pooper_cube::image_t depth_buffer{
             physical_device, 
@@ -234,6 +240,9 @@ auto main(int p_argc, char** p_argv) -> int {
             const VkBuffer vertex_buffer_raw = vertex_buffer;
             vkCmdBindVertexBuffers(command_buffer, 0, 1, &vertex_buffer_raw, &offset);
             vkCmdBindIndexBuffer(command_buffer, index_buffer, 0, VK_INDEX_TYPE_UINT32);
+
+            float color_offset = 0.0f;
+            vkCmdPushConstants(command_buffer, pipeline_layout, VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(float), &color_offset);
 
             // vkCmdDraw(command_buffer, 3, 1, 0, 0);
             vkCmdDrawIndexed(command_buffer, 6, 1, 0, 0, 0);
