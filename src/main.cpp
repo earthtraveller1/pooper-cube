@@ -9,6 +9,89 @@
 #include "vulkan-debug.hpp"
 #include "vulkan-instance.hpp"
 
+namespace {
+    using pooper_cube::vertex_t;
+
+    enum class cube_side_t {
+        front, back, top, bottom, left, right
+    };
+
+    auto append_cube_face(std::vector<vertex_t>& p_vertices, std::vector<uint32_t>& p_indices, float p_size, cube_side_t p_side) {
+        struct pairs_t {
+            float a;
+            float b;
+        };
+
+        const std::array<pairs_t, 4> pairs {
+            pairs_t {0.5f * p_size, -0.5f * p_size},
+            pairs_t {0.5f * p_size, 0.5f * p_size},
+            pairs_t {-0.5f * p_size, 0.5f * p_size},
+            pairs_t {-0.5f * p_size, -0.5f * p_size}
+        };
+
+        for (auto pair : pairs) {
+            switch (p_side) {
+                case cube_side_t::front:
+                    p_vertices.push_back(vertex_t {
+                        .position = {pair.a, pair.b, p_size * 0.5f}
+                    });
+                    break;
+                case cube_side_t::back:
+                    p_vertices.push_back(vertex_t {
+                        .position = {pair.a, pair.b, p_size * -0.5f}
+                    });
+                    break;
+                case cube_side_t::right:
+                    p_vertices.push_back(vertex_t {
+                        .position = {0.5f * p_size, pair.b, -pair.a}
+                    });
+                    break;
+                case cube_side_t::left:
+                    p_vertices.push_back(vertex_t {
+                        .position = {-0.5f * p_size, pair.b, pair.a}
+                    });
+                    break;
+                case cube_side_t::top:
+                    p_vertices.push_back(vertex_t {
+                        .position = {pair.a, 0.5f * p_size, pair.b}
+                    });
+                    break;
+                case cube_side_t::bottom:
+                    p_vertices.push_back(vertex_t {
+                        .position = {pair.a, -0.5f * p_size, pair.b}
+                    });
+                    break;
+            }
+        }
+
+        const auto index_base = static_cast<uint32_t>(p_vertices.size());
+
+        const auto is_back_side = p_side == cube_side_t::back |
+                                  p_side == cube_side_t::bottom |
+                                  p_side == cube_side_t::left;
+
+        if (is_back_side) {
+            p_indices.insert(p_indices.end(), {
+                index_base + 0,
+                index_base + 3,
+                index_base + 2,
+                index_base + 2,
+                index_base + 1,
+                index_base + 0
+           });
+        } else {
+            p_indices.insert(p_indices.end(), {
+                index_base + 0,
+                index_base + 1,
+                index_base + 2,
+                index_base + 0,
+                index_base + 3,
+                index_base + 2
+            });
+        }
+    }
+}
+
 auto main(int p_argc, char** p_argv) -> int {
     using pooper_cube::buffer_t;
     using pooper_cube::choose_physical_device;
