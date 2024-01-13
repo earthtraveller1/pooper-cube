@@ -44,6 +44,8 @@ namespace {
         fmt::color text_color;
         std::string_view severity_text;
 
+        std::string_view type_text;
+
         switch (p_message_severity) {
             case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
                 text_color = fmt::color::gray;
@@ -66,8 +68,6 @@ namespace {
                 severity_text = "";
         }
 
-        std::string_view type_text;
-
         switch (p_message_type) {
             case VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT:
                 type_text = "GENERAL";
@@ -85,6 +85,13 @@ namespace {
 
         fmt::print(stderr, fmt::fg(text_color), "[VULKAN {} {}]: {}\n", 
                 type_text, severity_text, p_callback_data->pMessage);
+
+        if (p_message_severity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT) {
+            exit(1);
+            // As for the potential for resource leaks, well, usually when an error
+            // gets report, everything afterwards is undefined behaviour anyways, which
+            // could result in a segfault. No loss here.
+        }
 
         return VK_FALSE;
     }
