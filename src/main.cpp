@@ -10,28 +10,28 @@
 #include "vulkan-instance.hpp"
 
 auto main(int p_argc, char** p_argv) -> int {
+    using pooper_cube::buffer_t;
     using pooper_cube::choose_physical_device;
     using pooper_cube::command_pool_t;
     using pooper_cube::debug_messenger_t;
+    using pooper_cube::descriptor_layout_t;
+    using pooper_cube::descriptor_pool_t;
     using pooper_cube::device_t;
+    using pooper_cube::fence_t;
+    using pooper_cube::framebuffers_t;
+    using pooper_cube::generic_vulkan_exception_t;
+    using pooper_cube::graphics_pipeline_t;
+    using pooper_cube::host_coherent_buffer_t;
+    using pooper_cube::image_t;
     using pooper_cube::instance_t;
     using pooper_cube::no_adequate_physical_device_exception_t;
-    using pooper_cube::generic_vulkan_exception_t;
+    using pooper_cube::pipeline_layout_t;
+    using pooper_cube::render_pass_t;
+    using pooper_cube::semaphore_t;
     using pooper_cube::shader_module_t;
     using pooper_cube::swapchain_t;
     using pooper_cube::vulkan_creation_exception_t;
     using pooper_cube::window_t;
-    using pooper_cube::pipeline_layout_t;
-    using pooper_cube::graphics_pipeline_t;
-    using pooper_cube::buffer_t;
-    using pooper_cube::semaphore_t;
-    using pooper_cube::fence_t;
-    using pooper_cube::render_pass_t;
-    using pooper_cube::framebuffers_t;
-    using pooper_cube::image_t;
-    using pooper_cube::descriptor_pool_t;
-    using pooper_cube::descriptor_layout_t;
-    using pooper_cube::host_coherent_buffer_t;
 
     bool enable_validation = false;
 
