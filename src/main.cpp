@@ -31,6 +31,7 @@ auto main(int p_argc, char** p_argv) -> int {
     using pooper_cube::image_t;
     using pooper_cube::descriptor_pool_t;
     using pooper_cube::descriptor_layout_t;
+    using pooper_cube::host_coherent_buffer_t;
 
     bool enable_validation = false;
 
@@ -99,7 +100,8 @@ auto main(int p_argc, char** p_argv) -> int {
         };
 
         const auto descriptor_set = descriptor_pool.allocate_set(descriptor_layout);
-        const buffer_t uniform_buffer{physical_device, logical_device, buffer_t::type_t::uniform, sizeof(float)};
+        const host_coherent_buffer_t uniform_buffer{physical_device, logical_device, buffer_t::type_t::uniform, sizeof(float)};
+        const auto uniform_buffer_address = uniform_buffer.map_memory();
 
         {
             const VkDescriptorBufferInfo buffer_info{
@@ -296,6 +298,9 @@ auto main(int p_argc, char** p_argv) -> int {
 
             float color_offset = 0.0f;
             vkCmdPushConstants(command_buffer, pipeline_layout, VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(float), &color_offset);
+
+            float other_color_offset = 0.0f;
+            memcpy(uniform_buffer_address, &other_color_offset, sizeof(float));
 
             // vkCmdDraw(command_buffer, 3, 1, 0, 0);
             vkCmdDrawIndexed(command_buffer, 6, 1, 0, 0, 0);
