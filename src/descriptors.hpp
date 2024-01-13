@@ -29,6 +29,8 @@ namespace pooper_cube {
 
             operator VkDescriptorPool() const noexcept { return m_pool; }
 
+            auto allocate_set(const descriptor_layout_t& layout) const -> VkDescriptorSet;
+
             ~descriptor_pool_t() noexcept {
                 vkDestroyDescriptorPool(m_device, m_pool, nullptr);
             }

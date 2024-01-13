@@ -36,4 +36,24 @@ namespace pooper_cube {
             throw vulkan_creation_exception_t{result, "descriptor pool"};
         }
     }
+
+    auto descriptor_pool_t::allocate_set(const descriptor_layout_t& p_layout) const -> VkDescriptorSet {
+        const VkDescriptorSetLayout layout = p_layout;
+
+        const VkDescriptorSetAllocateInfo allocate_info {
+            .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
+            .pNext = nullptr,
+            .descriptorPool = m_pool,
+            .descriptorSetCount = 1,
+            .pSetLayouts = &layout,
+        };
+
+        VkDescriptorSet set;
+        const auto result = vkAllocateDescriptorSets(m_device, &allocate_info, &set);
+        if (result != VK_SUCCESS) {
+            throw vulkan_creation_exception_t{result, "descriptor set"};
+        }
+
+        return set;
+    }
 }
