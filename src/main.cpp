@@ -148,7 +148,7 @@ auto main(int p_argc, char** p_argv) -> int {
                 {{-0.5f, -0.5f, 0.0f}}
             };
 
-            const pooper_cube::staging_buffer_t staging_buffer{physical_device, logical_device, sizeof(vertices)};
+            const pooper_cube::host_coherent_buffer_t staging_buffer{physical_device, logical_device, buffer_t::type_t::staging, sizeof(vertices)};
 
             {
                 const auto memory = staging_buffer.map_memory();
@@ -166,7 +166,7 @@ auto main(int p_argc, char** p_argv) -> int {
                 0, 2, 3
             };
 
-            const pooper_cube::staging_buffer_t staging_buffer{physical_device, logical_device, sizeof(indices)};
+            const pooper_cube::host_coherent_buffer_t staging_buffer{physical_device, logical_device, buffer_t::type_t::staging, sizeof(indices)};
 
             {
                 const auto memory = staging_buffer.map_memory();

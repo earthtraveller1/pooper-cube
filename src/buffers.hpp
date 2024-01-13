@@ -51,15 +51,15 @@ namespace pooper_cube {
             VkDeviceSize m_size;
     };
 
-    class staging_buffer_t : public buffer_t {
+    class host_coherent_buffer_t : public buffer_t {
         public:
-            staging_buffer_t(const physical_device_t& physical_device, const device_t& device, VkDeviceSize size)
-                : buffer_t(physical_device, device, type_t::staging, size)
+            host_coherent_buffer_t(const physical_device_t& physical_device, const device_t& device, type_t type, VkDeviceSize size)
+                : buffer_t(physical_device, device, type, size)
             {}
 
             class mapped_memory_t {
                 public:
-                    mapped_memory_t(void* data, const staging_buffer_t& buffer) :
+                    mapped_memory_t(void* data, const host_coherent_buffer_t& buffer) :
                         m_data(data), m_buffer(buffer) {}
                     NO_COPY(mapped_memory_t);
 
@@ -72,7 +72,7 @@ namespace pooper_cube {
 
                 private:
                     void* m_data;
-                    const staging_buffer_t& m_buffer;
+                    const host_coherent_buffer_t& m_buffer;
             };
 
             auto map_memory() const noexcept -> mapped_memory_t {
