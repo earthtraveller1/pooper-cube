@@ -309,7 +309,7 @@ auto main(int p_argc, char** p_argv) -> int {
             vkCmdBindDescriptorSets(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, 1, &descriptor_set_raw, 0, nullptr);
 
             const push_constants_t push_constants {
-                .model = glm::mat4{1.0f},
+                .model = glm::rotate(glm::mat4{1.0f}, glm::radians(static_cast<float>(frame_time*50.0f)), glm::vec3{1.0f, 0.5f, 0.0f}),
                 .color_offset = static_cast<float>(std::sin(frame_time) / 2 + 0.5),
             };
 
