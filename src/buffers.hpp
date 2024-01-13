@@ -21,7 +21,7 @@ namespace pooper_cube {
     class buffer_t {
         public:
             enum class type_t {
-                vertex, element, staging
+                vertex, element, staging, uniform
             };
 
             struct allocation_exception_t {
