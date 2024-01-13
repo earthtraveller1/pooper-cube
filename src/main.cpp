@@ -33,6 +33,17 @@ auto main(int p_argc, char** p_argv) -> int {
     using pooper_cube::vulkan_creation_exception_t;
     using pooper_cube::window_t;
 
+    struct push_constants_t {
+        glm::mat4 model;
+        float color_offset;
+    };
+
+    struct uniform_buffer_object_t {
+        glm::mat4 view;
+        glm::mat4 projection;
+        float color_offset;
+    };
+
     bool enable_validation = false;
 
     const std::vector<const char*> argv(p_argv, p_argv + p_argc);
@@ -74,7 +85,7 @@ auto main(int p_argc, char** p_argv) -> int {
                 .binding = 0,
                 .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
                 .descriptorCount = 1,
-                .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT,
+                .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_VERTEX_BIT,
                 .pImmutableSamplers = nullptr
             }
         }};
@@ -82,9 +93,9 @@ auto main(int p_argc, char** p_argv) -> int {
         const std::array<VkDescriptorSetLayout, 1> set_layouts{descriptor_layout};
         const std::array<VkPushConstantRange, 1> push_constant_ranges {
             VkPushConstantRange {
-                .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT,
+                .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_VERTEX_BIT,
                 .offset = 0,
-                .size = sizeof(float),
+                .size = sizeof(push_constants_t),
             }
         };
 
@@ -100,14 +111,14 @@ auto main(int p_argc, char** p_argv) -> int {
         };
 
         const auto descriptor_set = descriptor_pool.allocate_set(descriptor_layout);
-        const host_coherent_buffer_t uniform_buffer{physical_device, logical_device, buffer_t::type_t::uniform, sizeof(float)};
+        const host_coherent_buffer_t uniform_buffer{physical_device, logical_device, buffer_t::type_t::uniform, sizeof(uniform_buffer_object_t)};
         const auto uniform_buffer_address = uniform_buffer.map_memory();
 
         {
             const VkDescriptorBufferInfo buffer_info{
                 .buffer = uniform_buffer,
                 .offset = 0,
-                .range = sizeof(float),
+                .range = sizeof(uniform_buffer_object_t),
             };
 
             const VkWriteDescriptorSet descriptor_write{
@@ -297,13 +308,24 @@ auto main(int p_argc, char** p_argv) -> int {
             const VkDescriptorSet descriptor_set_raw = descriptor_set;
             vkCmdBindDescriptorSets(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, 1, &descriptor_set_raw, 0, nullptr);
 
-            float color_offset = std::sin(frame_time) / 2 + 0.5;
-            vkCmdPushConstants(command_buffer, pipeline_layout, VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(float), &color_offset);
+            const push_constants_t push_constants {
+                .model = glm::mat4{1.0f},
+                .color_offset = static_cast<float>(std::sin(frame_time) / 2 + 0.5),
+            };
 
-            float other_color_offset = std::cos(frame_time) / 2 + 0.5;
-            memcpy(uniform_buffer_address, &other_color_offset, sizeof(float));
+            vkCmdPushConstants(command_buffer, pipeline_layout, VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(push_constants_t), &push_constants);
 
-            // vkCmdDraw(command_buffer, 3, 1, 0, 0);
+            const auto window_dimensions = window.get_dimensions();
+            const auto aspect_ratio = static_cast<float>(window_dimensions.width) / static_cast<float>(window_dimensions.height);
+
+            const uniform_buffer_object_t uniform_buffer_object {
+                .view = glm::translate(glm::mat4{1.0f} , glm::vec3{0.0f, 0.0f, -2.0f}),
+                .projection = glm::perspective(glm::radians(70.0f), aspect_ratio, 0.01f, 100.0f),
+                .color_offset = static_cast<float>(std::cos(frame_time) / 2 + 0.5),
+            };
+
+            memcpy(uniform_buffer_address, &uniform_buffer_object, sizeof(uniform_buffer_object));
+
             vkCmdDrawIndexed(command_buffer, 6, 1, 0, 0, 0);
 
             vkCmdEndRenderPass(command_buffer);
