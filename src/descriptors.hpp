@@ -11,6 +11,8 @@ namespace pooper_cube {
             descriptor_layout_t(const device_t& device, std::span<const VkDescriptorSetLayoutBinding> bindings);
             NO_COPY(descriptor_layout_t);
 
+            operator VkDescriptorSetLayout() const noexcept { return m_layout; }
+
             ~descriptor_layout_t() noexcept {
                 vkDestroyDescriptorSetLayout(m_device, m_layout, nullptr);
             }
@@ -24,6 +26,8 @@ namespace pooper_cube {
         public:
             descriptor_pool_t(const device_t& device, std::span<const VkDescriptorPoolSize> sizes, uint32_t max_sets);
             NO_COPY(descriptor_pool_t);
+
+            operator VkDescriptorPool() const noexcept { return m_pool; }
 
             ~descriptor_pool_t() noexcept {
                 vkDestroyDescriptorPool(m_device, m_pool, nullptr);
