@@ -19,4 +19,18 @@ namespace pooper_cube {
             VkDescriptorSetLayout m_layout;
             const device_t& m_device;
     };
+
+    class descriptor_pool_t {
+        public:
+            descriptor_pool_t(const device_t& device, std::span<const VkDescriptorPoolSize> sizes, uint32_t max_sets);
+            NO_COPY(descriptor_pool_t);
+
+            ~descriptor_pool_t() noexcept {
+                vkDestroyDescriptorPool(m_device, m_pool, nullptr);
+            }
+
+        private:
+            VkDescriptorPool m_pool;
+            const device_t& m_device;
+    };
 }
