@@ -186,6 +186,7 @@ auto main(int p_argc, char** p_argv) -> int {
         window.show();
         while (!window.should_close()) {
             const VkFence rendering_done_fence_raw = rendering_done_fence;
+            const auto frame_time = glfwGetTime();
 
             VkResult result;
 #define VK_ERROR(f, m) result = f; if (result != VK_SUCCESS) { throw generic_vulkan_exception_t{result, m}; }
@@ -296,10 +297,10 @@ auto main(int p_argc, char** p_argv) -> int {
             const VkDescriptorSet descriptor_set_raw = descriptor_set;
             vkCmdBindDescriptorSets(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, 1, &descriptor_set_raw, 0, nullptr);
 
-            float color_offset = 0.0f;
+            float color_offset = std::sin(frame_time) / 2 + 0.5;
             vkCmdPushConstants(command_buffer, pipeline_layout, VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(float), &color_offset);
 
-            float other_color_offset = 0.0f;
+            float other_color_offset = std::cos(frame_time) / 2 + 0.5;
             memcpy(uniform_buffer_address, &other_color_offset, sizeof(float));
 
             // vkCmdDraw(command_buffer, 3, 1, 0, 0);
