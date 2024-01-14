@@ -66,29 +66,14 @@ namespace {
             }
         }
 
-        const auto is_back_side = p_side == cube_side_t::back |
-                                  p_side == cube_side_t::bottom |
-                                  p_side == cube_side_t::left;
-
-        if (is_back_side) {
-            p_indices.insert(p_indices.end(), {
-                index_base + 0,
-                index_base + 3,
-                index_base + 2,
-                index_base + 2,
-                index_base + 1,
-                index_base + 0
-           });
-        } else {
-            p_indices.insert(p_indices.end(), {
-                index_base + 0,
-                index_base + 1,
-                index_base + 2,
-                index_base + 0,
-                index_base + 3,
-                index_base + 2
-            });
-        }
+        p_indices.insert(p_indices.end(), {
+            index_base + 0,
+            index_base + 1,
+            index_base + 2,
+            index_base + 0,
+            index_base + 2,
+            index_base + 3,
+       });
     }
 
     struct mesh_t {
@@ -378,9 +363,9 @@ auto main(int p_argc, char** p_argv) -> int {
 
             const VkViewport viewport {
                 .x = 0,
-                .y = 0,
+                .y = static_cast<float>(swapchain.get_extent().height),
                 .width = static_cast<float>(swapchain.get_extent().width),
-                .height = static_cast<float>(swapchain.get_extent().height),
+                .height = -static_cast<float>(swapchain.get_extent().height),
                 .minDepth = 0.0f,
                 .maxDepth = 1.0f,
             };
