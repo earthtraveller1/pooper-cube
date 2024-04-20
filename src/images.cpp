@@ -104,14 +104,14 @@ namespace pooper_cube {
                 .a = VK_COMPONENT_SWIZZLE_IDENTITY,
             },
             .subresourceRange = {
-                .aspectMask = [&](){
+                .aspectMask = static_cast<VkImageAspectFlags>([&](){
                     switch (p_type) {
                         case type_t::depth_buffer:
                             return VK_IMAGE_ASPECT_DEPTH_BIT;
                         case type_t::sampled:
                             return VK_IMAGE_ASPECT_COLOR_BIT;
                     }
-                }(),
+                }()),
                 .baseMipLevel = 0,
                 .levelCount = 1,
                 .baseArrayLayer = 0,
